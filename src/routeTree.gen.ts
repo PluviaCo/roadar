@@ -13,6 +13,8 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RoutesIndexRouteImport } from './routes/routes/index'
+import { Route as RoutesIdRouteImport } from './routes/routes/$id'
 import { Route as AuthLineCallbackRouteImport } from './routes/auth/line/callback'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -35,6 +37,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoutesIndexRoute = RoutesIndexRouteImport.update({
+  id: '/routes/',
+  path: '/routes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoutesIdRoute = RoutesIdRouteImport.update({
+  id: '/routes/$id',
+  path: '/routes/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLineCallbackRoute = AuthLineCallbackRouteImport.update({
   id: '/auth/line/callback',
   path: '/auth/line/callback',
@@ -46,6 +58,8 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
+  '/routes/$id': typeof RoutesIdRoute
+  '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +67,8 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
+  '/routes/$id': typeof RoutesIdRoute
+  '/routes': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
 }
 export interface FileRoutesById {
@@ -61,19 +77,37 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
+  '/routes/$id': typeof RoutesIdRoute
+  '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/settings' | '/auth/line/callback'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/settings'
+    | '/routes/$id'
+    | '/routes/'
+    | '/auth/line/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/settings' | '/auth/line/callback'
+  to:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/settings'
+    | '/routes/$id'
+    | '/routes'
+    | '/auth/line/callback'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/login'
     | '/settings'
+    | '/routes/$id'
+    | '/routes/'
     | '/auth/line/callback'
   fileRoutesById: FileRoutesById
 }
@@ -82,6 +116,8 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
   SettingsRoute: typeof SettingsRoute
+  RoutesIdRoute: typeof RoutesIdRoute
+  RoutesIndexRoute: typeof RoutesIndexRoute
   AuthLineCallbackRoute: typeof AuthLineCallbackRoute
 }
 
@@ -115,6 +151,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/routes/': {
+      id: '/routes/'
+      path: '/routes'
+      fullPath: '/routes/'
+      preLoaderRoute: typeof RoutesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/routes/$id': {
+      id: '/routes/$id'
+      path: '/routes/$id'
+      fullPath: '/routes/$id'
+      preLoaderRoute: typeof RoutesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/line/callback': {
       id: '/auth/line/callback'
       path: '/auth/line/callback'
@@ -130,6 +180,8 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
   SettingsRoute: SettingsRoute,
+  RoutesIdRoute: RoutesIdRoute,
+  RoutesIndexRoute: RoutesIndexRoute,
   AuthLineCallbackRoute: AuthLineCallbackRoute,
 }
 export const routeTree = rootRouteImport

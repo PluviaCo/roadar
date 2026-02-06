@@ -26,7 +26,7 @@ export const Route = createFileRoute('/auth/line/callback')({
         const code = url.searchParams.get('code')!
         console.log('settings')
         console.log('redirect_uri: ', redirect_uri)
-        console.log('client_id: ', client_id)
+        console.log('code: ', client_id)
         // console.log(client_secret)
         console.log('code: ', code)
 
