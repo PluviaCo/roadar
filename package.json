@@ -26,6 +26,7 @@
     "@tanstack/react-router-ssr-query": "^1.131.7",
     "@tanstack/react-start": "^1.132.0",
     "@tanstack/router-plugin": "^1.132.0",
+    "@vis.gl/react-google-maps": "^1.7.1",
     "kysely": "^0.28.11",
     "kysely-d1": "^0.4.0",
     "lucide-react": "^0.561.0",
