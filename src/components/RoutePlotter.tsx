@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps'
 
-const RoutePlotter = ({ points }) => {
+const RoutePlotter = ({
+  points,
+}: {
+  points: Array<google.maps.LatLngLiteral>
+}) => {
   const map = useMap()
   const routesLibrary = useMapsLibrary('routes')
-  const [directionsService, setDirectionsService] = useState(null)
-  const [directionsRenderer, setDirectionsRenderer] = useState(null)
+  const [directionsService, setDirectionsService] =
+    useState<google.maps.DirectionsService | null>(null)
 
-  // 1. Initialize the Google Services
+  const [directionsRenderer, setDirectionsRenderer] =
+    useState<google.maps.DirectionsRenderer | null>(null)
+
   useEffect(() => {
     if (!routesLibrary || !map) return
 
@@ -42,7 +48,7 @@ const RoutePlotter = ({ points }) => {
         origin,
         destination,
         waypoints,
-        travelMode: 'DRIVING', // You can just use the string 'DRIVING' in JS
+        travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
         if (status === 'OK') {
