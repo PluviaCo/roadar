@@ -15,7 +15,7 @@ export function Header() {
           <StyledCustomLink to="/">Index</StyledCustomLink>
           <StyledCustomLink to="/about">About</StyledCustomLink>
           <StyledCustomLink to="/settings">Settings</StyledCustomLink>
-          <StyledCustomLink to="/login">Login</StyledCustomLink>
+          <StyledCustomLink to="/signin">Sign In</StyledCustomLink>
         </Toolbar>
       </AppBar>
     </Box>
