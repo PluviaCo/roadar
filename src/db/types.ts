@@ -4,6 +4,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
 export interface UsersTable {
   id: Generated<number>
+  updated_at: ColumnType<Timestamp, Timestamp, never>
   created_at: ColumnType<Timestamp, Timestamp, never>
 }
 
@@ -11,6 +12,7 @@ export interface LineUsersTable {
   id: Generated<number>
   user_id: number
   line_user_id: string
+  updated_at: ColumnType<Timestamp, Timestamp, never>
   created_at: ColumnType<Timestamp, Timestamp, never>
 }
 

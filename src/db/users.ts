@@ -1,3 +1,4 @@
+import { sql } from 'kysely'
 import { getDb } from '.'
 
 export async function createLineUser(lineUserId: string) {
@@ -20,6 +21,8 @@ export async function createLineUser(lineUserId: string) {
     .values({
       user_id: user.id,
       line_user_id: lineUserId,
+      updated_at: sql`CURRENT_TIMESTAMP`,
+      created_at: sql`CURRENT_TIMESTAMP`,
     })
     .execute()
 }
