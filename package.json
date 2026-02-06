@@ -10,8 +10,11 @@
     "lint": "eslint",
     "format": "prettier",
     "check": "prettier --write . && eslint --fix",
-    "deploy": "npm run build && wrangler deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
+    "deploy": "npm run build && npm run deploy:secrets && wrangler deploy",
+    "deploy:secrets": "npx wrangler secret bulk .env.production",
+    "cf-typegen": "wrangler types",
+    "migrate": "npx wrangler d1 migrations apply roadar-db --local",
+    "migrate:production": "npx wrangler d1 migrations apply roadar-db --remote"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.13.8",

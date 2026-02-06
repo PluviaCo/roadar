@@ -1,6 +1,5 @@
 import { sql } from 'kysely'
 import { getDb } from '.'
-import type { D1Database } from '@cloudflare/workers-types'
 
 export interface ProfileData {
   userId: string
