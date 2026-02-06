@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/login')({
-  component: Login,
+export const Route = createFileRoute('/signin')({
+  component: SignIn,
 })
 
-function Login() {
-  const handleLineLogin = () => {
+function SignIn() {
+  const handleLineSignIn = () => {
     const lineLoginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${
       import.meta.env.VITE_LINE_CHANNEL_ID
     }&redirect_uri=${
@@ -16,8 +16,8 @@ function Login() {
 
   return (
     <div className="p-2">
-      <h3>Login</h3>
-      <button onClick={handleLineLogin}>Login with LINE</button>
+      <h3>Sign In</h3>
+      <button onClick={handleLineSignIn}>Continue with LINE</button>
     </div>
   )
 }
