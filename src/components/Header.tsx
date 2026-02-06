@@ -1,4 +1,4 @@
-import { AppBar, Box, Toolbar, css, styled } from '@mui/material'
+import { AppBar, Box, Button, Toolbar, css, styled } from '@mui/material'
 import { CustomLink } from './CustomLink'
 
 const StyledCustomLink = styled(CustomLink)(
@@ -14,6 +14,8 @@ export function Header() {
         <Toolbar sx={{ gap: 2 }}>
           <StyledCustomLink to="/">Index</StyledCustomLink>
           <StyledCustomLink to="/about">About</StyledCustomLink>
+          <StyledCustomLink to="/settings">Settings</StyledCustomLink>
+          <StyledCustomLink to="/login">Login</StyledCustomLink>
         </Toolbar>
       </AppBar>
     </Box>

@@ -3,5 +3,13 @@
   "name": "tanstack-start-app",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+  "main": "@tanstack/react-start/server-entry",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "roadar-db",
+      "database_id": "<D1_DATABASE_ID_PLACEHOLDER>"
+    }
+  ]
 }
+
