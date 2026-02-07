@@ -39,6 +39,12 @@ export const Route = createRootRoute({
     return context.user
   },
   head: () => ({
+    meta: [
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
+      },
+    ],
     links: [{ rel: 'stylesheet', href: fontsourceVariableRobotoCss }],
   }),
   component: RootComponent,
