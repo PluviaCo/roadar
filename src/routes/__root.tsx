@@ -52,6 +52,7 @@ export const Route = createRootRoute({
   },
   head: () => ({
     meta: [
+      { title: 'Roadar - Discover and Share Amazing Routes' },
       {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
