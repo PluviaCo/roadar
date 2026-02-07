@@ -9,22 +9,9 @@ import {
   Typography,
 } from '@mui/material'
 import { Bookmark, BookmarkBorder } from '@mui/icons-material'
-import { createServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
 import { toggleSavedRoute } from '@/server/saved-routes'
-
-const fetchRoutes = createServerFn({ method: 'GET' }).handler(async () => {
-  const { env } = await import('cloudflare:workers')
-  const { getDb } = await import('@/db')
-  const { getAllRoutes } = await import('@/db/routes')
-  const { useAppSession } = await import('@/lib/session')
-
-  const db = getDb((env as any).DB)
-  const session = await useAppSession()
-  const userId = session.data.id || undefined
-
-  return await getAllRoutes(db, userId)
-})
+import { fetchRoutes } from '@/server/routes'
 
 export const Route = createFileRoute('/routes/')({
   loader: async () => {

@@ -2,26 +2,11 @@ import { createFileRoute } from '@tanstack/react-router'
 import { IconButton, Stack, Typography } from '@mui/material'
 import { Bookmark, BookmarkBorder } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
-import { createServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
 import RoutePlotter from '@/components/RoutePlotter'
 import { PhotoUpload } from '@/components/PhotoUpload'
 import { toggleSavedRoute } from '@/server/saved-routes'
-
-const fetchRoute = createServerFn({ method: 'GET' })
-  .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getRouteById } = await import('@/db/routes')
-    const { useAppSession } = await import('@/lib/session')
-
-    const db = getDb((env as any).DB)
-    const session = await useAppSession()
-    const userId = session.data.id || undefined
-
-    return await getRouteById(db, Number(data.id), userId)
-  })
+import { fetchRoute } from '@/server/routes'
 
 export const Route = createFileRoute('/routes/$id')({
   loader: async ({ params }) => {
