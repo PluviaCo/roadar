@@ -1,5 +1,7 @@
-import { AppBar, Box, Button, Toolbar, css, styled } from '@mui/material'
+import { AppBar, Box, Toolbar, css, styled } from '@mui/material'
+import { useRouteContext } from '@tanstack/react-router'
 import { CustomLink } from './CustomLink'
+import { CustomButtonLink } from './CustomButtonLink'
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme }) => css`
@@ -8,6 +10,8 @@ const StyledCustomLink = styled(CustomLink)(
 )
 
 export function Header() {
+  const { user } = useRouteContext({ from: '__root__' })
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -15,7 +19,14 @@ export function Header() {
           <StyledCustomLink to="/">Index</StyledCustomLink>
           <StyledCustomLink to="/about">About</StyledCustomLink>
           <StyledCustomLink to="/settings">Settings</StyledCustomLink>
-          <StyledCustomLink to="/signin">Sign In</StyledCustomLink>
+          {user ? (
+            <p>
+              {user.email}
+              <StyledCustomLink to="/signout">Sign Out</StyledCustomLink>
+            </p>
+          ) : (
+            <StyledCustomLink to="/signin">Sign In</StyledCustomLink>
+          )}
         </Toolbar>
       </AppBar>
     </Box>

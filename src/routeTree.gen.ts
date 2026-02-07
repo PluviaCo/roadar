@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignoutRouteImport } from './routes/signout'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as AboutRouteImport } from './routes/about'
@@ -17,6 +18,11 @@ import { Route as RoutesIndexRouteImport } from './routes/routes/index'
 import { Route as RoutesIdRouteImport } from './routes/routes/$id'
 import { Route as AuthLineCallbackRouteImport } from './routes/auth/line/callback'
 
+const SignoutRoute = SignoutRouteImport.update({
+  id: '/signout',
+  path: '/signout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
+  '/signout': typeof SignoutRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
+  '/signout': typeof SignoutRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
+  '/signout': typeof SignoutRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/settings'
     | '/signin'
+    | '/signout'
     | '/routes/$id'
     | '/routes/'
     | '/auth/line/callback'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/settings'
     | '/signin'
+    | '/signout'
     | '/routes/$id'
     | '/routes'
     | '/auth/line/callback'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/settings'
     | '/signin'
+    | '/signout'
     | '/routes/$id'
     | '/routes/'
     | '/auth/line/callback'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
+  SignoutRoute: typeof SignoutRoute
   RoutesIdRoute: typeof RoutesIdRoute
   RoutesIndexRoute: typeof RoutesIndexRoute
   AuthLineCallbackRoute: typeof AuthLineCallbackRoute
@@ -123,6 +136,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signout': {
+      id: '/signout'
+      path: '/signout'
+      fullPath: '/signout'
+      preLoaderRoute: typeof SignoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signin': {
       id: '/signin'
       path: '/signin'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
+  SignoutRoute: SignoutRoute,
   RoutesIdRoute: RoutesIdRoute,
   RoutesIndexRoute: RoutesIndexRoute,
   AuthLineCallbackRoute: AuthLineCallbackRoute,
