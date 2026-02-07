@@ -7,6 +7,7 @@ export interface Route {
   id: string
   name: string
   coordinates: Array<RouteCoordinate>
+  photos: Array<string>
 }
 
 const mockRoutes: Array<Route> = [
@@ -19,6 +20,11 @@ const mockRoutes: Array<Route> = [
       { lat: 35.685, lng: 139.653 },
       { lat: 35.688, lng: 139.649 },
     ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
   },
   {
     id: '2',
@@ -28,6 +34,10 @@ const mockRoutes: Array<Route> = [
       { lat: 35.555, lng: 139.775 },
       { lat: 35.56, lng: 139.77 },
       { lat: 35.565, lng: 139.765 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
     ],
   },
   {
@@ -39,6 +49,11 @@ const mockRoutes: Array<Route> = [
       { lat: 35.665, lng: 139.765 },
       { lat: 35.67, lng: 139.77 },
     ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
   },
   {
     id: '4',
@@ -48,6 +63,10 @@ const mockRoutes: Array<Route> = [
       { lat: 35.725, lng: 139.635 },
       { lat: 35.73, lng: 139.64 },
       { lat: 35.735, lng: 139.645 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
     ],
   },
   {
@@ -59,6 +78,11 @@ const mockRoutes: Array<Route> = [
       { lat: 35.675, lng: 139.71 },
       { lat: 35.68, lng: 139.715 },
     ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
   },
   {
     id: '6',
@@ -69,6 +93,7 @@ const mockRoutes: Array<Route> = [
       { lat: 35.72, lng: 139.75 },
       { lat: 35.725, lng: 139.745 },
     ],
+    photos: ['https://placehold.co/600x400?text=Photo+1'],
   },
   {
     id: '7',
@@ -78,6 +103,11 @@ const mockRoutes: Array<Route> = [
       { lat: 35.635, lng: 139.735 },
       { lat: 35.64, lng: 139.74 },
       { lat: 35.645, lng: 139.735 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
     ],
   },
   {
@@ -89,6 +119,13 @@ const mockRoutes: Array<Route> = [
       { lat: 35.655, lng: 139.78 },
       { lat: 35.66, lng: 139.785 },
     ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+      'https://placehold.co/600x400?text=Photo+4',
+      'https://placehold.co/600x400?text=Photo+5',
+    ],
   },
   {
     id: '9',
@@ -99,6 +136,11 @@ const mockRoutes: Array<Route> = [
       { lat: 35.7, lng: 139.73 },
       { lat: 35.705, lng: 139.725 },
     ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
   },
   {
     id: '10',
@@ -108,6 +150,11 @@ const mockRoutes: Array<Route> = [
       { lat: 35.595, lng: 139.665 },
       { lat: 35.6, lng: 139.67 },
       { lat: 35.605, lng: 139.675 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
     ],
   },
 ]

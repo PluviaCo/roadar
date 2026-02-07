@@ -42,14 +42,7 @@ function RouteDetailComponent() {
     <Stack spacing={2} padding={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="h1">{route.name}</Typography>
-        <Button variant="outlined" onClick={() => navigate({ to: '/routes' })}>
-          Back to Routes
-        </Button>
       </Stack>
-
-      <Typography color="textSecondary">
-        {route.coordinates.length} stops
-      </Typography>
 
       <Stack
         sx={{
@@ -74,6 +67,34 @@ function RouteDetailComponent() {
         <Typography>
           Total Stops: <strong>{route.coordinates.length}</strong>
         </Typography>
+      </Stack>
+
+      <Stack spacing={1}>
+        <Typography variant="h6">Photos</Typography>
+        {route.photos.length > 0 ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {route.photos.map((photo, index) => (
+              <img
+                key={index}
+                src={photo}
+                alt={`Route photo ${index + 1}`}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '8px',
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <Typography>No photos available for this route.</Typography>
+        )}
       </Stack>
     </Stack>
   )

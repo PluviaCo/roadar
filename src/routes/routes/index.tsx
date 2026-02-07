@@ -6,7 +6,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import type { Route as RouteModel } from '@/db/routes'
 import { getAllRoutes } from '@/db/routes'
 
 export const Route = createFileRoute('/routes/')({
