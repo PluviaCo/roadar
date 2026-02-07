@@ -43,10 +43,40 @@ export interface SavedRoutesTable {
   created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
+export interface TripsTable {
+  id: Generated<number>
+  user_id: number
+  route_id: number | null
+  title: string
+  notes: string | null
+  coordinates: string // JSON string
+  date: ColumnType<Date, Date | string, Date | string>
+  rating: number | null // 1-5 stars
+  created_at: ColumnType<Date, Date | string | undefined, never>
+  updated_at: ColumnType<Date, Date | string | undefined, never>
+}
+
+export interface TripPhotosTable {
+  id: Generated<number>
+  trip_id: number
+  url: string
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
+export interface TripLikesTable {
+  id: Generated<number>
+  user_id: number
+  trip_id: number
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
 export interface DB {
   users: UsersTable
   line_users: LineUsersTable
   routes: RoutesTable
   photos: PhotosTable
   saved_routes: SavedRoutesTable
+  trips: TripsTable
+  trip_photos: TripPhotosTable
+  trip_likes: TripLikesTable
 }

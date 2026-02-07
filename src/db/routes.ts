@@ -11,6 +11,8 @@ export interface Route {
   name: string
   coordinates: Array<RouteCoordinate>
   photos: Array<string>
+  tripCount: number
+  averageRating: number | null
   isSaved?: boolean
 }
 
@@ -71,6 +73,7 @@ export async function getAllRoutes(
 
   const routesWithPhotos = await Promise.all(
     routes.map(async (route) => {
+      // Get direct route photos
       const photos = await db
         .selectFrom('photos')
         .select('url')
@@ -78,11 +81,39 @@ export async function getAllRoutes(
         .orderBy('created_at', 'asc')
         .execute()
 
+      // Get trip photos from trips on this route
+      const tripPhotos = await db
+        .selectFrom('trip_photos')
+        .innerJoin('trips', 'trips.id', 'trip_photos.trip_id')
+        .select('trip_photos.url')
+        .where('trips.route_id', '=', route.id)
+        .orderBy('trip_photos.created_at', 'asc')
+        .execute()
+
+      // Get trip count and average rating
+      const tripStats = await db
+        .selectFrom('trips')
+        .select([
+          db.fn.count('id').as('count'),
+          db.fn.avg('rating').as('avg_rating'),
+        ])
+        .where('route_id', '=', route.id)
+        .executeTakeFirst()
+
+      const allPhotos = [
+        ...photos.map((p) => p.url),
+        ...tripPhotos.map((p) => p.url),
+      ]
+
       return {
         id: String(route.id),
         name: route.name,
         coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
-        photos: photos.map((p) => p.url),
+        photos: allPhotos,
+        tripCount: Number(tripStats?.count || 0),
+        averageRating: tripStats?.avg_rating
+          ? Number(tripStats.avg_rating)
+          : null,
         isSaved: userId ? savedIds.has(route.id) : undefined,
       }
     }),
@@ -106,12 +137,32 @@ export async function getRouteById(
     return undefined
   }
 
+  // Get direct route photos
   const photos = await db
     .selectFrom('photos')
     .select('url')
     .where('route_id', '=', route.id)
     .orderBy('created_at', 'asc')
     .execute()
+
+  // Get trip photos from trips on this route
+  const tripPhotos = await db
+    .selectFrom('trip_photos')
+    .innerJoin('trips', 'trips.id', 'trip_photos.trip_id')
+    .select('trip_photos.url')
+    .where('trips.route_id', '=', route.id)
+    .orderBy('trip_photos.created_at', 'asc')
+    .execute()
+
+  // Get trip count and average rating
+  const tripStats = await db
+    .selectFrom('trips')
+    .select([
+      db.fn.count('id').as('count'),
+      db.fn.avg('rating').as('avg_rating'),
+    ])
+    .where('route_id', '=', route.id)
+    .executeTakeFirst()
 
   let isSaved: boolean | undefined = undefined
   if (userId) {
@@ -124,11 +175,18 @@ export async function getRouteById(
     isSaved = !!savedRoute
   }
 
+  const allPhotos = [
+    ...photos.map((p) => p.url),
+    ...tripPhotos.map((p) => p.url),
+  ]
+
   return {
     id: String(route.id),
     name: route.name,
     coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
-    photos: photos.map((p) => p.url),
+    photos: allPhotos,
+    tripCount: Number(tripStats?.count || 0),
+    averageRating: tripStats?.avg_rating ? Number(tripStats.avg_rating) : null,
     isSaved,
   }
 }
