@@ -14,6 +14,7 @@ import React from 'react'
 import { createServerFn } from '@tanstack/react-start'
 import { theme } from '@/setup/theme'
 import { Header } from '@/components/Header'
+import { SnackbarProvider } from '@/components/SnackbarProvider'
 import { useAppSession } from '@/lib/session'
 import { Footer } from '@/components/Footer'
 
@@ -24,7 +25,18 @@ const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
     return null
   }
 
-  return { id: session.data.id, email: session.data.email }
+  const { getUser } = await import('@/db/users')
+  const { env } = await import('cloudflare:workers')
+
+  const db = (env as any).DB
+  const user = await getUser(db, session.data.id)
+
+  return {
+    id: user.id,
+    email: user.email || undefined,
+    name: user.name,
+    picture_url: user.picture_url || undefined,
+  }
 })
 
 export const Route = createRootRoute({
@@ -81,16 +93,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Providers>
-          <Header />
+        <SnackbarProvider>
+          <Providers>
+            <Header />
 
-          <Container component="main" sx={{ paddingBlock: 4 }}>
-            {children}
-          </Container>
+            <Container component="main" sx={{ paddingBlock: 4 }}>
+              {children}
+            </Container>
 
-          <Footer />
-        </Providers>
-
+            <Footer />
+          </Providers>
+        </SnackbarProvider>
         <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>

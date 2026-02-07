@@ -80,3 +80,26 @@ export async function getUser(db: D1Database, id: number) {
 
   return user
 }
+
+export async function updateUser(
+  db: D1Database,
+  id: number,
+  data: {
+    name?: string
+    picture_url?: string
+  },
+) {
+  const kysely = getDb(db)
+
+  const updatedUser = await kysely
+    .updateTable('users')
+    .set({
+      ...data,
+      updated_at: sql`CURRENT_TIMESTAMP` as any,
+    })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirstOrThrow()
+
+  return updatedUser
+}

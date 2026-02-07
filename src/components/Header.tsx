@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Avatar,
   Box,
   IconButton,
   Menu,
@@ -28,6 +29,8 @@ export function Header() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
+  console.log('[Header] User context:', user)
+
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -55,7 +58,13 @@ export function Header() {
                 onClick={handleMenu}
                 color="inherit"
               >
-                <UserIcon />
+                <Avatar
+                  src={user.picture_url || undefined}
+                  alt={user.name}
+                  sx={{ width: 32, height: 32 }}
+                >
+                  {!user.picture_url && <UserIcon />}
+                </Avatar>
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -72,7 +81,7 @@ export function Header() {
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem disabled>{user.email}</MenuItem>
+                <MenuItem disabled>{user.name}</MenuItem>
                 <Link to="/settings">
                   <MenuItem onClick={handleClose}>Settings</MenuItem>
                 </Link>
