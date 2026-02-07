@@ -74,10 +74,19 @@ export const toggleSavedRoute = createServerFn({ method: 'POST' })
 
 ## Why This Separation?
 
+**Three-Layer Architecture:**
+
+1. **Routes Layer** (`/src/routes/`) - Routing & UI
+2. **Server Layer** (`/src/server/`) - Authentication & Business Logic
+3. **Database Layer** (`/src/db/`) - Data Access
+
+**Benefits:**
+
 1. **Testability**: Database functions can be tested independently without mocking server context
 2. **Reusability**: DB functions can be called from multiple server functions or scripts
-3. **Clear Boundaries**: Business logic (server) vs data access (db) are clearly separated
+3. **Clear Boundaries**: UI (routes) → Business logic (server) → Data access (db)
 4. **Maintainability**: Changes to authentication don't affect database logic
+5. **Clean Route Files**: Routes focus on routing and rendering, not data fetching implementation
 
 ---
 
@@ -121,6 +130,47 @@ export const toggleSavedRoute = createServerFn({ method: 'POST' })
 - Use `server.handlers.GET/POST` for API endpoints
 - Use dynamic imports for cloudflare:workers binding
 - Extract params from `params` object or `request.url`
+
+### Route Files (`/src/routes/`)
+
+**Purpose:** Define routes, loaders, and UI components only.
+
+**Rules:**
+
+- ❌ NO inline `createServerFn` definitions in route files
+- ❌ NO database access or authentication logic
+- ✅ Import server functions from `/src/server/`
+- ✅ Define route configuration (loader, component, errorComponent)
+- ✅ UI component logic and state management
+- ✅ Call server functions in loaders or event handlers
+
+**Example:**
+
+```typescript
+// ✅ Good - Route file imports server function
+import { fetchRoutes } from '@/server/routes'
+import { toggleSavedRoute } from '@/server/saved-routes'
+
+export const Route = createFileRoute('/routes/')({
+  loader: async () => {
+    return await fetchRoutes()
+  },
+  component: RoutesListComponent,
+})
+
+function RoutesListComponent() {
+  const routes = Route.useLoaderData()
+  // ... component logic
+}
+```
+
+```typescript
+// ❌ Bad - Inline server function in route file
+const fetchRoutes = createServerFn({ method: 'GET' }).handler(async () => {
+  const { env } = await import('cloudflare:workers')
+  // ... this belongs in /src/server/
+})
+```
 
 ---
 
