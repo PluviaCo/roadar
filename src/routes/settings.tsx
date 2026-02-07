@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { createProtectedRoute } from '@/lib/protected-routes'
 
 export const Route = createFileRoute('/settings')({
+  ...createProtectedRoute(),
   component: Settings,
 })
 

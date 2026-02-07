@@ -11,10 +11,29 @@ import { Container, CssBaseline, ThemeProvider } from '@mui/material'
 import createCache from '@emotion/cache'
 import fontsourceVariableRobotoCss from '@fontsource-variable/roboto?url'
 import React from 'react'
+import { createServerFn } from '@tanstack/react-start'
 import { theme } from '@/setup/theme'
 import { Header } from '@/components/Header'
+import { useAppSession } from '@/lib/session'
+
+const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
+  const session = await useAppSession()
+
+  if (!session.data.id) {
+    return null
+  }
+
+  return { id: session.data.id, email: session.data.email }
+})
 
 export const Route = createRootRoute({
+  beforeLoad: async () => {
+    const user = await fetchUser()
+
+    return {
+      user,
+    }
+  },
   head: () => ({
     links: [{ rel: 'stylesheet', href: fontsourceVariableRobotoCss }],
   }),
