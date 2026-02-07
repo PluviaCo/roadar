@@ -8,14 +8,16 @@ read
 echo ""
 echo "Dropping all tables and migration history..."
 
-# Drop tables one by one (multi-line commands don't work well with wrangler)
+# Drop tables in reverse dependency order (child tables first)
+npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS trip_likes;"
+npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS trip_photos;"
+npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS trips;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS saved_routes;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS photos;"
-npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS line_users;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS routes;"
+npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS line_users;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS users;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS d1_migrations;"
-npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS _cf_KV;"
 
 echo ""
 echo "Applying migrations..."
