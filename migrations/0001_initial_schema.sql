@@ -45,3 +45,18 @@ CREATE TABLE IF NOT EXISTS photos (
 
 -- Create index for photos user_id
 CREATE INDEX IF NOT EXISTS idx_photos_user_id ON photos(user_id);
+
+-- Create saved_routes table
+CREATE TABLE IF NOT EXISTS saved_routes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  route_id INTEGER NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE,
+  UNIQUE(user_id, route_id)
+);
+
+-- Create indexes for saved_routes
+CREATE INDEX IF NOT EXISTS idx_saved_routes_user_id ON saved_routes(user_id);
+CREATE INDEX IF NOT EXISTS idx_saved_routes_route_id ON saved_routes(route_id);

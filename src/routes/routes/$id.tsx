@@ -1,9 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Stack, Typography } from '@mui/material'
+import { IconButton, Stack, Typography } from '@mui/material'
+import { Bookmark, BookmarkBorder } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { createServerFn } from '@tanstack/react-start'
+import { useState } from 'react'
 import RoutePlotter from '@/components/RoutePlotter'
 import { PhotoUpload } from '@/components/PhotoUpload'
+import { toggleSavedRoute } from '@/server/saved-routes'
 
 const fetchRoute = createServerFn({ method: 'GET' })
   .inputValidator((data: { id: string }) => data)
@@ -11,9 +14,13 @@ const fetchRoute = createServerFn({ method: 'GET' })
     const { env } = await import('cloudflare:workers')
     const { getDb } = await import('@/db')
     const { getRouteById } = await import('@/db/routes')
+    const { useAppSession } = await import('@/lib/session')
 
     const db = getDb((env as any).DB)
-    return await getRouteById(db, Number(data.id))
+    const session = await useAppSession()
+    const userId = session.data.id || undefined
+
+    return await getRouteById(db, Number(data.id), userId)
   })
 
 export const Route = createFileRoute('/routes/$id')({
@@ -35,6 +42,22 @@ export const Route = createFileRoute('/routes/$id')({
 function RouteDetailComponent() {
   const route = Route.useLoaderData()
   const { user } = Route.useRouteContext()
+  const [isSaved, setIsSaved] = useState(route.isSaved || false)
+
+  const handleSaveClick = async () => {
+    if (!user) return
+
+    // Optimistic update
+    setIsSaved(!isSaved)
+
+    try {
+      await toggleSavedRoute({ data: { routeId: route.id } })
+    } catch (error) {
+      // Revert on error
+      setIsSaved(!isSaved)
+      console.error('Failed to toggle saved route:', error)
+    }
+  }
 
   // Calculate center of the route
   const center =
@@ -53,6 +76,15 @@ function RouteDetailComponent() {
     <Stack spacing={2} padding={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="h1">{route.name}</Typography>
+        {user && (
+          <IconButton onClick={handleSaveClick} size="large">
+            {isSaved ? (
+              <Bookmark color="primary" fontSize="large" />
+            ) : (
+              <BookmarkBorder fontSize="large" />
+            )}
+          </IconButton>
+        )}
       </Stack>
 
       <Stack

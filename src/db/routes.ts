@@ -11,6 +11,7 @@ export interface Route {
   name: string
   coordinates: Array<RouteCoordinate>
   photos: Array<string>
+  isSaved?: boolean
 }
 
 // Database functions
@@ -47,12 +48,26 @@ export async function createRoute(
   return routeId
 }
 
-export async function getAllRoutes(db: Kysely<DB>): Promise<Array<Route>> {
+export async function getAllRoutes(
+  db: Kysely<DB>,
+  userId?: number,
+): Promise<Array<Route>> {
   const routes = await db
     .selectFrom('routes')
     .selectAll()
     .orderBy('created_at', 'desc')
     .execute()
+
+  // Get saved route IDs if user is logged in
+  let savedIds: Set<number> = new Set()
+  if (userId) {
+    const savedRoutes = await db
+      .selectFrom('saved_routes')
+      .select('route_id')
+      .where('user_id', '=', userId)
+      .execute()
+    savedIds = new Set(savedRoutes.map((f) => f.route_id))
+  }
 
   const routesWithPhotos = await Promise.all(
     routes.map(async (route) => {
@@ -68,6 +83,7 @@ export async function getAllRoutes(db: Kysely<DB>): Promise<Array<Route>> {
         name: route.name,
         coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
         photos: photos.map((p) => p.url),
+        isSaved: userId ? savedIds.has(route.id) : undefined,
       }
     }),
   )
@@ -78,6 +94,7 @@ export async function getAllRoutes(db: Kysely<DB>): Promise<Array<Route>> {
 export async function getRouteById(
   db: Kysely<DB>,
   id: number,
+  userId?: number,
 ): Promise<Route | undefined> {
   const route = await db
     .selectFrom('routes')
@@ -96,11 +113,23 @@ export async function getRouteById(
     .orderBy('created_at', 'asc')
     .execute()
 
+  let isSaved: boolean | undefined = undefined
+  if (userId) {
+    const savedRoute = await db
+      .selectFrom('saved_routes')
+      .select('id')
+      .where('user_id', '=', userId)
+      .where('route_id', '=', route.id)
+      .executeTakeFirst()
+    isSaved = !!savedRoute
+  }
+
   return {
     id: String(route.id),
     name: route.name,
     coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
     photos: photos.map((p) => p.url),
+    isSaved,
   }
 }
 

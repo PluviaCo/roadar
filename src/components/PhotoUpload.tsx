@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, CircularProgress, Stack, Typography } from '@mui/material'
 import { CloudUpload } from '@mui/icons-material'
-import { uploadPhoto } from '@/db/photos'
+import { uploadPhoto } from '@/server/photos'
 
 export function PhotoUpload({ routeId }: { routeId: string }) {
   const [uploading, setUploading] = useState(false)

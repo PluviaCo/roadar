@@ -4,18 +4,26 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  IconButton,
   Stack,
   Typography,
 } from '@mui/material'
+import { Bookmark, BookmarkBorder } from '@mui/icons-material'
 import { createServerFn } from '@tanstack/react-start'
+import { useState } from 'react'
+import { toggleSavedRoute } from '@/server/saved-routes'
 
 const fetchRoutes = createServerFn({ method: 'GET' }).handler(async () => {
   const { env } = await import('cloudflare:workers')
   const { getDb } = await import('@/db')
   const { getAllRoutes } = await import('@/db/routes')
+  const { useAppSession } = await import('@/lib/session')
 
   const db = getDb((env as any).DB)
-  return await getAllRoutes(db)
+  const session = await useAppSession()
+  const userId = session.data.id || undefined
+
+  return await getAllRoutes(db, userId)
 })
 
 export const Route = createFileRoute('/routes/')({
@@ -27,7 +35,33 @@ export const Route = createFileRoute('/routes/')({
 
 function RoutesListComponent() {
   const routes = Route.useLoaderData()
+  const { user } = Route.useRouteContext()
   const navigate = useNavigate()
+  const [savedRoutes, setSavedRoutes] = useState<Record<string, boolean>>(
+    routes.reduce(
+      (acc, route) => {
+        acc[route.id] = route.isSaved || false
+        return acc
+      },
+      {} as Record<string, boolean>,
+    ),
+  )
+
+  const handleSaveClick = async (e: React.MouseEvent, routeId: string) => {
+    e.stopPropagation()
+    if (!user) return
+
+    // Optimistic update
+    setSavedRoutes((prev) => ({ ...prev, [routeId]: !prev[routeId] }))
+
+    try {
+      await toggleSavedRoute({ data: { routeId } })
+    } catch (error) {
+      // Revert on error
+      setSavedRoutes((prev) => ({ ...prev, [routeId]: !prev[routeId] }))
+      console.error('Failed to toggle saved route:', error)
+    }
+  }
 
   return (
     <Stack spacing={2} padding={2}>
@@ -36,7 +70,7 @@ function RoutesListComponent() {
       </Typography>
       <Stack spacing={2}>
         {routes.map((route) => (
-          <Card key={route.id}>
+          <Card key={route.id} sx={{ position: 'relative' }}>
             <CardActionArea
               onClick={() => navigate({ to: `/routes/${route.id}` })}
               sx={{
@@ -66,6 +100,26 @@ function RoutesListComponent() {
                 </Typography>
               </CardContent>
             </CardActionArea>
+            {user && (
+              <IconButton
+                onClick={(e) => handleSaveClick(e, route.id)}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  bgcolor: 'rgba(255, 255, 255, 0.8)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  },
+                }}
+              >
+                {savedRoutes[route.id] ? (
+                  <Bookmark color="primary" />
+                ) : (
+                  <BookmarkBorder />
+                )}
+              </IconButton>
+            )}
           </Card>
         ))}
       </Stack>

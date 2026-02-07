@@ -36,9 +36,17 @@ export interface PhotosTable {
   created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
+export interface SavedRoutesTable {
+  id: Generated<number>
+  user_id: number
+  route_id: number
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
 export interface DB {
   users: UsersTable
   line_users: LineUsersTable
   routes: RoutesTable
   photos: PhotosTable
+  saved_routes: SavedRoutesTable
 }
