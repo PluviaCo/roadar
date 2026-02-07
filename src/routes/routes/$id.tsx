@@ -1,5 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button, IconButton, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  IconButton,
+  Rating,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { Bookmark, BookmarkBorder, DriveEta } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { useState } from 'react'
@@ -163,6 +170,27 @@ function RouteDetailComponent() {
           )}
         </Stack>
       </Stack>
+
+      {(route.averageRating || route.description) && (
+        <Stack spacing={1}>
+          {route.averageRating && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Rating value={route.averageRating} precision={0.1} readOnly />
+              <Typography variant="body1" fontWeight="medium">
+                {route.averageRating.toFixed(1)}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                ({route.tripCount} trip{route.tripCount !== 1 ? 's' : ''})
+              </Typography>
+            </Box>
+          )}
+          {route.description && (
+            <Typography variant="body1" color="textSecondary">
+              {route.description}
+            </Typography>
+          )}
+        </Stack>
+      )}
 
       <Stack
         sx={{

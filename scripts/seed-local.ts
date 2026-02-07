@@ -3,6 +3,8 @@ import { execSync } from 'node:child_process'
 const mockRoutes = [
   {
     name: 'Downtown Loop',
+    description:
+      'A scenic route through the heart of downtown, perfect for exploring the city center.',
     coordinates: [
       { lat: 35.6762, lng: 139.6503 },
       { lat: 35.6795, lng: 139.655 },
@@ -17,6 +19,8 @@ const mockRoutes = [
   },
   {
     name: 'Airport Express',
+    description:
+      'Quick and efficient route connecting the city to the airport with minimal stops.',
     coordinates: [
       { lat: 35.5494, lng: 139.7798 },
       { lat: 35.555, lng: 139.775 },
@@ -30,6 +34,8 @@ const mockRoutes = [
   },
   {
     name: 'Waterfront Route',
+    description:
+      'Beautiful coastal drive with stunning ocean views and fresh sea breeze.',
     coordinates: [
       { lat: 35.6555, lng: 139.758 },
       { lat: 35.66, lng: 139.762 },
@@ -44,6 +50,8 @@ const mockRoutes = [
   },
   {
     name: 'Suburban Connector',
+    description:
+      'Peaceful suburban route connecting residential areas with local amenities.',
     coordinates: [
       { lat: 35.72, lng: 139.63 },
       { lat: 35.725, lng: 139.635 },
@@ -57,6 +65,8 @@ const mockRoutes = [
   },
   {
     name: 'Shopping District',
+    description:
+      'Navigate through trendy shopping areas and popular retail destinations.',
     coordinates: [
       { lat: 35.665, lng: 139.7 },
       { lat: 35.67, lng: 139.705 },
@@ -71,6 +81,8 @@ const mockRoutes = [
   },
   {
     name: 'University Shuttle',
+    description:
+      'Convenient route connecting campus buildings and student housing areas.',
     coordinates: [
       { lat: 35.71, lng: 139.76 },
       { lat: 35.715, lng: 139.755 },
@@ -81,6 +93,8 @@ const mockRoutes = [
   },
   {
     name: 'Business Park Loop',
+    description:
+      'Efficient loop serving major office buildings and business centers.',
     coordinates: [
       { lat: 35.63, lng: 139.73 },
       { lat: 35.635, lng: 139.735 },
@@ -95,6 +109,8 @@ const mockRoutes = [
   },
   {
     name: 'Harbor Transit',
+    description:
+      'Scenic harbor route with views of boats, ships, and maritime activities.',
     coordinates: [
       { lat: 35.645, lng: 139.77 },
       { lat: 35.65, lng: 139.775 },
@@ -111,6 +127,8 @@ const mockRoutes = [
   },
   {
     name: 'Historic District Tour',
+    description:
+      'Explore historical landmarks and cultural sites throughout the old city.',
     coordinates: [
       { lat: 35.69, lng: 139.72 },
       { lat: 35.695, lng: 139.725 },
@@ -124,7 +142,9 @@ const mockRoutes = [
     ],
   },
   {
-    name: 'Industrial Zone Express',
+    name: 'Park Circuit',
+    description:
+      'Relaxing route winding through green spaces, gardens, and recreational areas.',
     coordinates: [
       { lat: 35.59, lng: 139.66 },
       { lat: 35.595, lng: 139.665 },
@@ -157,9 +177,12 @@ let routeId = 1
 for (const route of mockRoutes) {
   const coordsJson = JSON.stringify(route.coordinates).replace(/'/g, "''")
   const name = route.name.replace(/'/g, "''")
+  const description = route.description
+    ? route.description.replace(/'/g, "''")
+    : null
 
   sqlStatements.push(
-    `INSERT INTO routes (id, name, coordinates, updated_at, created_at) VALUES (${routeId}, '${name}', '${coordsJson}', datetime('now'), datetime('now'));`,
+    `INSERT INTO routes (id, name, description, coordinates, updated_at, created_at) VALUES (${routeId}, '${name}', ${description ? `'${description}'` : 'NULL'}, '${coordsJson}', datetime('now'), datetime('now'));`,
   )
 
   for (const photoUrl of route.photos) {

@@ -22,6 +22,7 @@ export interface LineUsersTable {
 export interface RoutesTable {
   id: Generated<number>
   name: string
+  description: string | null
   coordinates: string // JSON string
   updated_at: ColumnType<Date, Date | string | undefined, never>
   created_at: ColumnType<Date, Date | string | undefined, never>

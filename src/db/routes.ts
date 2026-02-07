@@ -9,6 +9,7 @@ export interface RouteCoordinate {
 export interface Route {
   id: string
   name: string
+  description: string | null
   coordinates: Array<RouteCoordinate>
   photos: Array<string>
   tripCount: number
@@ -108,6 +109,7 @@ export async function getAllRoutes(
       return {
         id: String(route.id),
         name: route.name,
+        description: route.description,
         coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
         photos: allPhotos,
         tripCount: Number(tripStats?.count || 0),
@@ -183,6 +185,7 @@ export async function getRouteById(
   return {
     id: String(route.id),
     name: route.name,
+    description: route.description,
     coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
     photos: allPhotos,
     tripCount: Number(tripStats?.count || 0),

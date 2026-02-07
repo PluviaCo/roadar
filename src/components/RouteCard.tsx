@@ -51,6 +51,22 @@ export function RouteCard({
         )}
         <CardContent sx={{ flex: 1 }}>
           <Typography variant="h5">{route.name}</Typography>
+          {route.description && (
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{
+                mt: 1,
+                mb: 0.5,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {route.description}
+            </Typography>
+          )}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
             {route.averageRating && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
