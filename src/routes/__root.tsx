@@ -15,6 +15,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { theme } from '@/setup/theme'
 import { Header } from '@/components/Header'
 import { useAppSession } from '@/lib/session'
+import { Footer } from '@/components/Footer'
 
 const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
   const session = await useAppSession()
@@ -74,6 +75,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <Container component="main" sx={{ paddingBlock: 4 }}>
             {children}
           </Container>
+
+          <Footer />
         </Providers>
 
         <TanStackRouterDevtools position="bottom-right" />
