@@ -13,13 +13,10 @@ export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
     const { env } = await import('cloudflare:workers')
     const { getDb } = await import('@/db')
     const { getAllRoutes } = await import('@/db/routes')
-    const { useAppSession } = await import('@/lib/session')
 
     const db = getDb((env as any).DB)
-    const session = await useAppSession()
-    const userId = session.data.id || undefined
 
-    return await getAllRoutes(db, userId)
+    return await getAllRoutes(db, undefined)
   },
 )
 
@@ -88,4 +85,28 @@ export const createRoute = createServerFn({ method: 'POST' })
     })
 
     return { routeId }
+  })
+
+export const updateRoutePrivacy = createServerFn({ method: 'POST' })
+  .inputValidator((data: { routeId: string; isPublic: boolean }) => data)
+  .handler(async ({ data }) => {
+    const { env } = await import('cloudflare:workers')
+    const { getDb } = await import('@/db')
+    const { updateRoutePrivacy } = await import('@/db/routes')
+    const { useAppSession } = await import('@/lib/session')
+
+    const session = await useAppSession()
+    if (!session.data.id) {
+      throw new Error('Unauthorized')
+    }
+
+    const db = getDb((env as any).DB)
+    await updateRoutePrivacy(
+      db,
+      Number(data.routeId),
+      session.data.id,
+      data.isPublic,
+    )
+
+    return { success: true }
   })

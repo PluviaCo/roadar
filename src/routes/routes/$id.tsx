@@ -22,7 +22,7 @@ import { PhotoUpload } from '@/components/PhotoUpload'
 import { TripForm } from '@/components/TripForm'
 import { TripCard } from '@/components/TripCard'
 import { toggleSavedRoute } from '@/server/saved-routes'
-import { fetchRoute } from '@/server/routes'
+import { fetchRoute, updateRoutePrivacy } from '@/server/routes'
 import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
 
 export const Route = createFileRoute('/routes/$id')({
@@ -45,8 +45,9 @@ export const Route = createFileRoute('/routes/$id')({
 })
 
 function RouteDetailComponent() {
-  const { route, trips: initialTrips } = Route.useLoaderData()
+  const { route: initialRoute, trips: initialTrips } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
+  const [route, setRoute] = useState(initialRoute)
   const [isSaved, setIsSaved] = useState(route.isSaved || false)
   const [trips, setTrips] = useState(initialTrips)
   const [tripFormOpen, setTripFormOpen] = useState(false)
@@ -63,6 +64,24 @@ function RouteDetailComponent() {
       // Revert on error
       setIsSaved(!isSaved)
       console.error('Failed to toggle saved route:', error)
+    }
+  }
+
+  const handlePrivacyToggle = async () => {
+    if (!user || route.userId !== user.id) return
+
+    // Optimistic update
+    const newIsPublic = !route.isPublic
+    setRoute({ ...route, isPublic: newIsPublic })
+
+    try {
+      await updateRoutePrivacy({
+        data: { routeId: route.id, isPublic: newIsPublic },
+      })
+    } catch (error) {
+      // Revert on error
+      setRoute({ ...route, isPublic: !newIsPublic })
+      console.error('Failed to toggle route privacy:', error)
     }
   }
 
@@ -154,23 +173,63 @@ function RouteDetailComponent() {
 
   return (
     <Stack spacing={2} padding={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h1">{route.name}</Typography>
+      <Typography variant="h1">{route.name}</Typography>
+
+      {route.averageRating ? (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Rating value={route.averageRating} precision={0.1} readOnly />
+            <Typography variant="body1" fontWeight="medium">
+              {route.averageRating.toFixed(1)}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              ({route.tripCount} trip{route.tripCount !== 1 ? 's' : ''})
+            </Typography>
+          </Box>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            {/* Show privacy status only if current user owns this route */}
+            {route.userId && user?.id === route.userId && (
+              <IconButton onClick={handlePrivacyToggle} size="small">
+                {route.isPublic ? <Public /> : <Lock />}
+              </IconButton>
+            )}
+            {user && (
+              <Button
+                variant="contained"
+                startIcon={<DriveEta />}
+                onClick={() => setTripFormOpen(true)}
+              >
+                Post Trip
+              </Button>
+            )}
+            {user && (
+              <IconButton onClick={handleSaveClick} size="large">
+                {isSaved ? (
+                  <Bookmark color="primary" fontSize="large" />
+                ) : (
+                  <BookmarkBorder fontSize="large" />
+                )}
+              </IconButton>
+            )}
+          </Stack>
+        </Stack>
+      ) : (
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          spacing={1}
+        >
           {/* Show privacy status only if current user owns this route */}
           {route.userId && user?.id === route.userId && (
-            <Chip
-              icon={route.isPublic ? <Public /> : <Lock />}
-              label={route.isPublic ? 'Public' : 'Private'}
-              size="small"
-              sx={{
-                bgcolor: route.isPublic ? 'success.main' : 'warning.main',
-                color: 'white',
-              }}
-            />
+            <IconButton onClick={handlePrivacyToggle} size="small">
+              {route.isPublic ? <Public /> : <Lock />}
+            </IconButton>
           )}
-        </Box>
-        <Stack direction="row" spacing={1}>
           {user && (
             <Button
               variant="contained"
@@ -190,27 +249,12 @@ function RouteDetailComponent() {
             </IconButton>
           )}
         </Stack>
-      </Stack>
+      )}
 
-      {(route.averageRating || route.description) && (
-        <Stack spacing={1}>
-          {route.averageRating && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Rating value={route.averageRating} precision={0.1} readOnly />
-              <Typography variant="body1" fontWeight="medium">
-                {route.averageRating.toFixed(1)}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                ({route.tripCount} trip{route.tripCount !== 1 ? 's' : ''})
-              </Typography>
-            </Box>
-          )}
-          {route.description && (
-            <Typography variant="body1" color="textSecondary">
-              {route.description}
-            </Typography>
-          )}
-        </Stack>
+      {route.description && (
+        <Typography variant="body1" color="textSecondary">
+          {route.description}
+        </Typography>
       )}
 
       <Stack

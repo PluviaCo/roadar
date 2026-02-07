@@ -237,6 +237,22 @@ export async function getUserRoutes(
   return routesWithPhotos
 }
 
+export async function updateRoutePrivacy(
+  db: Kysely<DB>,
+  routeId: number,
+  userId: number,
+  isPublic: boolean,
+): Promise<void> {
+  await db
+    .updateTable('routes')
+    .set({
+      is_public: isPublic,
+    })
+    .where('id', '=', routeId)
+    .where('user_id', '=', userId) // Ensure user owns the route
+    .executeTakeFirstOrThrow()
+}
+
 export async function getRouteById(
   db: Kysely<DB>,
   id: number,
