@@ -4,9 +4,7 @@ import { getDb } from '.'
 export interface ProfileData {
   userId: string
   displayName?: string
-  statusMessage?: string
   pictureUrl?: string
-  email?: string
 }
 
 export async function createLineUser(db: D1Database, profileData: ProfileData) {
@@ -23,12 +21,13 @@ export async function createLineUser(db: D1Database, profileData: ProfileData) {
     .executeTakeFirst()
 
   if (lineUser) {
-    return { userId: lineUser.user_id }
+    const user = getUser(db, lineUser.user_id)
+    return user
   }
 
   const user = await createUser(db, {
     name: profileData.displayName,
-    email: profileData.email || null,
+    email: null,
     picture_url: profileData.pictureUrl || null,
   })
 
@@ -42,7 +41,7 @@ export async function createLineUser(db: D1Database, profileData: ProfileData) {
     })
     .execute()
 
-  return { userId: user.id }
+  return user
 }
 
 export async function createUser(
@@ -64,8 +63,20 @@ export async function createUser(
       updated_at: sql`CURRENT_TIMESTAMP` as any,
       created_at: sql`CURRENT_TIMESTAMP` as any,
     })
-    .returning('id')
+    .returningAll()
     .executeTakeFirstOrThrow()
 
   return newUser
+}
+
+export async function getUser(db: D1Database, id: number) {
+  const kysely = getDb(db)
+
+  const user = await kysely
+    .selectFrom('users')
+    .where('id', '=', id)
+    .selectAll()
+    .executeTakeFirstOrThrow()
+
+  return user
 }
