@@ -1,5 +1,6 @@
 import type { Kysely } from 'kysely'
 import type { DB } from './types'
+import type { Route } from './routes'
 
 export async function toggleSaved(
   db: Kysely<DB>,
@@ -33,4 +34,17 @@ export async function toggleSaved(
       .execute()
     return true
   }
+}
+
+export async function getSavedRoutes(
+  db: Kysely<DB>,
+  userId: number,
+): Promise<Array<Route>> {
+  const { getAllRoutes } = await import('./routes')
+
+  // Get all routes with user context to mark saved status
+  const allRoutes = await getAllRoutes(db, userId)
+
+  // Filter only saved routes
+  return allRoutes.filter((route) => route.isSaved)
 }

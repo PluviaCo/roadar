@@ -44,10 +44,10 @@ export function Header() {
             <img src={Logo} alt="Roadar" width="24" height="24" />
           </StyledCustomLink>
           <StyledCustomLink to="/routes">Routes</StyledCustomLink>
-          <StyledCustomLink to="/settings">Settings</StyledCustomLink>
           <Box sx={{ flexGrow: 1 }} />
           {user ? (
-            <div>
+            <>
+              <StyledCustomLink to="/saved">Saved</StyledCustomLink>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -73,11 +73,14 @@ export function Header() {
                 onClose={handleClose}
               >
                 <MenuItem disabled>{user.email}</MenuItem>
+                <Link to="/settings">
+                  <MenuItem onClick={handleClose}>Settings</MenuItem>
+                </Link>
                 <Link to="/signout">
                   <MenuItem>Sign Out</MenuItem>
                 </Link>
               </Menu>
-            </div>
+            </>
           ) : (
             <StyledCustomLink to="/signin">Sign In</StyledCustomLink>
           )}
