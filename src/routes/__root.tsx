@@ -45,7 +45,10 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
     ],
-    links: [{ rel: 'stylesheet', href: fontsourceVariableRobotoCss }],
+    links: [
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'stylesheet', href: fontsourceVariableRobotoCss },
+    ],
   }),
   component: RootComponent,
 })
