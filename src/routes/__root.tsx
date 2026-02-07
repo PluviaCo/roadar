@@ -35,6 +35,9 @@ export const Route = createRootRoute({
       user,
     }
   },
+  loader: ({ context }) => {
+    return context.user
+  },
   head: () => ({
     links: [{ rel: 'stylesheet', href: fontsourceVariableRobotoCss }],
   }),

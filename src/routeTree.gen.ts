@@ -16,6 +16,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoutesIndexRouteImport } from './routes/routes/index'
 import { Route as RoutesIdRouteImport } from './routes/routes/$id'
+import { Route as PhotosSplatRouteImport } from './routes/photos/$'
 import { Route as AuthLineCallbackRouteImport } from './routes/auth/line/callback'
 
 const SignoutRoute = SignoutRouteImport.update({
@@ -53,6 +54,11 @@ const RoutesIdRoute = RoutesIdRouteImport.update({
   path: '/routes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PhotosSplatRoute = PhotosSplatRouteImport.update({
+  id: '/photos/$',
+  path: '/photos/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLineCallbackRoute = AuthLineCallbackRouteImport.update({
   id: '/auth/line/callback',
   path: '/auth/line/callback',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signout': typeof SignoutRoute
+  '/photos/$': typeof PhotosSplatRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signout': typeof SignoutRoute
+  '/photos/$': typeof PhotosSplatRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signout': typeof SignoutRoute
+  '/photos/$': typeof PhotosSplatRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signout'
+    | '/photos/$'
     | '/routes/$id'
     | '/routes/'
     | '/auth/line/callback'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signout'
+    | '/photos/$'
     | '/routes/$id'
     | '/routes'
     | '/auth/line/callback'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signout'
+    | '/photos/$'
     | '/routes/$id'
     | '/routes/'
     | '/auth/line/callback'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SignoutRoute: typeof SignoutRoute
+  PhotosSplatRoute: typeof PhotosSplatRoute
   RoutesIdRoute: typeof RoutesIdRoute
   RoutesIndexRoute: typeof RoutesIndexRoute
   AuthLineCallbackRoute: typeof AuthLineCallbackRoute
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoutesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/photos/$': {
+      id: '/photos/$'
+      path: '/photos/$'
+      fullPath: '/photos/$'
+      preLoaderRoute: typeof PhotosSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/line/callback': {
       id: '/auth/line/callback'
       path: '/auth/line/callback'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SignoutRoute: SignoutRoute,
+  PhotosSplatRoute: PhotosSplatRoute,
   RoutesIdRoute: RoutesIdRoute,
   RoutesIndexRoute: RoutesIndexRoute,
   AuthLineCallbackRoute: AuthLineCallbackRoute,

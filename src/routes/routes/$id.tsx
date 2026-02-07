@@ -3,6 +3,7 @@ import { Stack, Typography } from '@mui/material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { createServerFn } from '@tanstack/react-start'
 import RoutePlotter from '@/components/RoutePlotter'
+import { PhotoUpload } from '@/components/PhotoUpload'
 
 const fetchRoute = createServerFn({ method: 'GET' })
   .inputValidator((data: { id: string }) => data)
@@ -33,6 +34,7 @@ export const Route = createFileRoute('/routes/$id')({
 
 function RouteDetailComponent() {
   const route = Route.useLoaderData()
+  const { user } = Route.useRouteContext()
 
   // Calculate center of the route
   const center =
@@ -80,6 +82,7 @@ function RouteDetailComponent() {
 
       <Stack spacing={1}>
         <Typography variant="h6">Photos</Typography>
+        {user && <PhotoUpload routeId={route.id} />}
         {route.photos.length > 0 ? (
           <div
             style={{

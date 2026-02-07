@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "roadar",
-  "compatibility_date": "2026-02-06",
+  "compatibility_date": "2026-02-05",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "observability": {
@@ -12,6 +12,12 @@
       "binding": "DB",
       "database_name": "roadar-db",
       "database_id": "bca65f16-9778-4297-8908-cb190acb6299",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS_BUCKET",
+      "bucket_name": "roadar-photos",
     },
   ],
 }

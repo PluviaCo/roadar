@@ -30,6 +30,7 @@ export interface RoutesTable {
 export interface PhotosTable {
   id: Generated<number>
   route_id: number
+  user_id: number | null
   url: string
   updated_at: ColumnType<Date, Date | string | undefined, never>
   created_at: ColumnType<Date, Date | string | undefined, never>

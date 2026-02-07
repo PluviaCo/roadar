@@ -143,7 +143,14 @@ console.log('Starting database seed...')
 
 // Build SQL commands
 console.log('Building SQL statements...')
-const sqlStatements = ['DELETE FROM photos;', 'DELETE FROM routes;']
+const sqlStatements = [
+  'DELETE FROM photos;',
+  'DELETE FROM routes;',
+  'DELETE FROM line_users;',
+  'DELETE FROM users;',
+  // Create a test user
+  `INSERT INTO users (id, name, email, picture_url, created_at, updated_at) VALUES (1, 'Test User', 'test@example.com', 'https://placehold.co/100x100', datetime('now'), datetime('now'));`,
+]
 
 // Add insert statements for routes and photos
 let routeId = 1
@@ -158,7 +165,7 @@ for (const route of mockRoutes) {
   for (const photoUrl of route.photos) {
     const url = photoUrl.replace(/'/g, "''")
     sqlStatements.push(
-      `INSERT INTO photos (route_id, url, updated_at, created_at) VALUES (${routeId}, '${url}', datetime('now'), datetime('now'));`,
+      `INSERT INTO photos (route_id, user_id, url, updated_at, created_at) VALUES (${routeId}, 1, '${url}', datetime('now'), datetime('now'));`,
     )
   }
 
