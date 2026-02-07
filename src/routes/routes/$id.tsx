@@ -2,12 +2,19 @@ import { createFileRoute } from '@tanstack/react-router'
 import {
   Box,
   Button,
+  Chip,
   IconButton,
   Rating,
   Stack,
   Typography,
 } from '@mui/material'
-import { Bookmark, BookmarkBorder, DriveEta } from '@mui/icons-material'
+import {
+  Bookmark,
+  BookmarkBorder,
+  DriveEta,
+  Lock,
+  Public,
+} from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { useState } from 'react'
 import RoutePlotter from '@/components/RoutePlotter'
@@ -148,7 +155,21 @@ function RouteDetailComponent() {
   return (
     <Stack spacing={2} padding={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="h1">{route.name}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="h1">{route.name}</Typography>
+          {/* Show privacy status only if current user owns this route */}
+          {route.userId && user?.id === route.userId && (
+            <Chip
+              icon={route.isPublic ? <Public /> : <Lock />}
+              label={route.isPublic ? 'Public' : 'Private'}
+              size="small"
+              sx={{
+                bgcolor: route.isPublic ? 'success.main' : 'warning.main',
+                color: 'white',
+              }}
+            />
+          )}
+        </Box>
         <Stack direction="row" spacing={1}>
           {user && (
             <Button
@@ -247,7 +268,7 @@ function RouteDetailComponent() {
       </Stack>
 
       <Stack spacing={2}>
-        <Typography variant="h6">Trips ({trips.length})</Typography>
+        <Typography variant="h6">Trips</Typography>
         {trips.length > 0 ? (
           <Stack spacing={2}>
             {trips.map((trip) => (

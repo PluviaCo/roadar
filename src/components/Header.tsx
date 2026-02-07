@@ -49,6 +49,7 @@ export function Header() {
           {user ? (
             <>
               <StyledCustomLink to="/saved">Saved</StyledCustomLink>
+              <StyledCustomLink to="/routes/my">My Routes</StyledCustomLink>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"

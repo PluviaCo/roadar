@@ -16,6 +16,7 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoutesIndexRouteImport } from './routes/routes/index'
+import { Route as RoutesMyRouteImport } from './routes/routes/my'
 import { Route as RoutesCreateRouteImport } from './routes/routes/create'
 import { Route as RoutesIdRouteImport } from './routes/routes/$id'
 import { Route as PhotosSplatRouteImport } from './routes/photos/$'
@@ -56,6 +57,11 @@ const RoutesIndexRoute = RoutesIndexRouteImport.update({
   path: '/routes/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoutesMyRoute = RoutesMyRouteImport.update({
+  id: '/routes/my',
+  path: '/routes/my',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoutesCreateRoute = RoutesCreateRouteImport.update({
   id: '/routes/create',
   path: '/routes/create',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/photos/$': typeof PhotosSplatRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/create': typeof RoutesCreateRoute
+  '/routes/my': typeof RoutesMyRoute
   '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/photos/$': typeof PhotosSplatRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/create': typeof RoutesCreateRoute
+  '/routes/my': typeof RoutesMyRoute
   '/routes': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/photos/$': typeof PhotosSplatRoute
   '/routes/$id': typeof RoutesIdRoute
   '/routes/create': typeof RoutesCreateRoute
+  '/routes/my': typeof RoutesMyRoute
   '/routes/': typeof RoutesIndexRoute
   '/auth/line/callback': typeof AuthLineCallbackRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/photos/$'
     | '/routes/$id'
     | '/routes/create'
+    | '/routes/my'
     | '/routes/'
     | '/auth/line/callback'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/photos/$'
     | '/routes/$id'
     | '/routes/create'
+    | '/routes/my'
     | '/routes'
     | '/auth/line/callback'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/photos/$'
     | '/routes/$id'
     | '/routes/create'
+    | '/routes/my'
     | '/routes/'
     | '/auth/line/callback'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   PhotosSplatRoute: typeof PhotosSplatRoute
   RoutesIdRoute: typeof RoutesIdRoute
   RoutesCreateRoute: typeof RoutesCreateRoute
+  RoutesMyRoute: typeof RoutesMyRoute
   RoutesIndexRoute: typeof RoutesIndexRoute
   AuthLineCallbackRoute: typeof AuthLineCallbackRoute
 }
@@ -224,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoutesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/routes/my': {
+      id: '/routes/my'
+      path: '/routes/my'
+      fullPath: '/routes/my'
+      preLoaderRoute: typeof RoutesMyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/routes/create': {
       id: '/routes/create'
       path: '/routes/create'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   PhotosSplatRoute: PhotosSplatRoute,
   RoutesIdRoute: RoutesIdRoute,
   RoutesCreateRoute: RoutesCreateRoute,
+  RoutesMyRoute: RoutesMyRoute,
   RoutesIndexRoute: RoutesIndexRoute,
   AuthLineCallbackRoute: AuthLineCallbackRoute,
 }

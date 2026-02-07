@@ -83,11 +83,20 @@ export async function getAllRoutes(
   db: Kysely<DB>,
   userId?: number,
 ): Promise<Array<Route>> {
-  const routes = await db
-    .selectFrom('routes')
-    .selectAll()
-    .orderBy('created_at', 'desc')
-    .execute()
+  // Get routes that are either public OR owned by the user
+  let query = db.selectFrom('routes').selectAll().orderBy('created_at', 'desc')
+
+  if (userId) {
+    // Show public routes + user's own routes (public or private)
+    query = query.where((eb) =>
+      eb.or([eb('is_public', '=', true), eb('user_id', '=', userId)]),
+    )
+  } else {
+    // Show only public routes for non-authenticated users
+    query = query.where('is_public', '=', true)
+  }
+
+  const routes = await query.execute()
 
   // Get saved route IDs if user is logged in
   let savedIds: Set<number> = new Set()
@@ -145,6 +154,80 @@ export async function getAllRoutes(
           ? Number(tripStats.avg_rating)
           : null,
         isSaved: userId ? savedIds.has(route.id) : undefined,
+        userId: route.user_id,
+        isPublic: route.is_public,
+      }
+    }),
+  )
+
+  return routesWithPhotos
+}
+
+// Get routes created by a specific user
+export async function getUserRoutes(
+  db: Kysely<DB>,
+  userId: number,
+): Promise<Array<Route>> {
+  const routes = await db
+    .selectFrom('routes')
+    .selectAll()
+    .where('user_id', '=', userId)
+    .orderBy('created_at', 'desc')
+    .execute()
+
+  // Get saved route IDs
+  const savedRoutes = await db
+    .selectFrom('saved_routes')
+    .select('route_id')
+    .where('user_id', '=', userId)
+    .execute()
+  const savedIds = new Set(savedRoutes.map((f) => f.route_id))
+
+  const routesWithPhotos = await Promise.all(
+    routes.map(async (route) => {
+      // Get direct route photos
+      const photos = await db
+        .selectFrom('photos')
+        .select('url')
+        .where('route_id', '=', route.id)
+        .orderBy('created_at', 'asc')
+        .execute()
+
+      // Get trip photos from trips on this route
+      const tripPhotos = await db
+        .selectFrom('trip_photos')
+        .innerJoin('trips', 'trips.id', 'trip_photos.trip_id')
+        .select('trip_photos.url')
+        .where('trips.route_id', '=', route.id)
+        .orderBy('trip_photos.created_at', 'asc')
+        .execute()
+
+      // Get trip count and average rating
+      const tripStats = await db
+        .selectFrom('trips')
+        .select([
+          db.fn.count('id').as('count'),
+          db.fn.avg('rating').as('avg_rating'),
+        ])
+        .where('route_id', '=', route.id)
+        .executeTakeFirst()
+
+      const allPhotos = [
+        ...photos.map((p) => p.url),
+        ...tripPhotos.map((p) => p.url),
+      ]
+
+      return {
+        id: String(route.id),
+        name: route.name,
+        description: route.description,
+        coordinates: JSON.parse(route.coordinates) as Array<RouteCoordinate>,
+        photos: allPhotos,
+        tripCount: Number(tripStats?.count || 0),
+        averageRating: tripStats?.avg_rating
+          ? Number(tripStats.avg_rating)
+          : null,
+        isSaved: savedIds.has(route.id),
         userId: route.user_id,
         isPublic: route.is_public,
       }

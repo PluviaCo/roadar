@@ -23,6 +23,26 @@ export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
   },
 )
 
+export const fetchUserRoutes = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { env } = await import('cloudflare:workers')
+    const { getDb } = await import('@/db')
+    const { getUserRoutes } = await import('@/db/routes')
+    const { useAppSession } = await import('@/lib/session')
+
+    const session = await useAppSession()
+
+    if (!session.data.id) {
+      throw new Error('Unauthorized')
+    }
+
+    const db = getDb((env as any).DB)
+    const routes = await getUserRoutes(db, session.data.id)
+
+    return routes
+  },
+)
+
 export const fetchRoute = createServerFn({ method: 'GET' })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
