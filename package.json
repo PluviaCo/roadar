@@ -16,6 +16,7 @@
     "migrate": "npx wrangler d1 migrations apply roadar-db --local",
     "migrate:production": "npx wrangler d1 migrations apply roadar-db --remote",
     "migrate:reset": "rm -rf .wrangler/state/v3/d1/ && npm run migrate && npm run seed",
+    "migrate:reset:production": "bash scripts/reset-production-db.sh",
     "seed": "tsx scripts/seed-local.ts"
   },
   "dependencies": {
