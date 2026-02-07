@@ -3,7 +3,7 @@ import { CustomLink } from './CustomLink'
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme }) => css`
-    color: ${theme.palette.common.white};
+    color: ${theme.palette.text.primary};
   `,
 )
 

@@ -16,7 +16,7 @@ import Logo from '@/assets/logo.svg'
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme }) => css`
-    color: ${theme.palette.common.white};
+    color: ${theme.palette.text.primary};
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -38,7 +38,7 @@ export function Header() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar sx={{ gap: 2 }}>
           <StyledCustomLink to="/">
             <img src={Logo} alt="Roadar" width="24" height="24" />
