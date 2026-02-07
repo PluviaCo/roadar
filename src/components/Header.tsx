@@ -58,11 +58,11 @@ export function Header() {
                 color="inherit"
               >
                 <Avatar
-                  src={user.picture_url || undefined}
+                  src={user.picture_url}
                   alt={user.name}
                   sx={{ width: 32, height: 32 }}
                 >
-                  {!user.picture_url && <UserIcon />}
+                  {user.picture_url ? undefined : user.name.charAt(0)}
                 </Avatar>
               </IconButton>
               <Menu
