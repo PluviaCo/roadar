@@ -1,6 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Stack, Typography } from '@mui/material'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
+import AddIcon from '@mui/icons-material/Add'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoutes } from '@/server/routes'
 import { RouteCard } from '@/components/RouteCard'
@@ -43,9 +44,23 @@ function RoutesListComponent() {
 
   return (
     <Stack spacing={2} padding={2}>
-      <Typography variant="h1" marginBottom={2}>
-        Routes
-      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <Typography variant="h1">Routes</Typography>
+        {user && (
+          <Link to="/routes/create">
+            <Button variant="contained" startIcon={<AddIcon />}>
+              Create Route
+            </Button>
+          </Link>
+        )}
+      </Box>
       <Stack spacing={2}>
         {routes.map((route) => (
           <RouteCard

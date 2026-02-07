@@ -24,6 +24,8 @@ export interface RoutesTable {
   name: string
   description: string | null
   coordinates: string // JSON string
+  user_id: number | null // NULL for system routes, populated for user-created routes
+  is_public: boolean
   updated_at: ColumnType<Date, Date | string | undefined, never>
   created_at: ColumnType<Date, Date | string | undefined, never>
 }

@@ -15,6 +15,8 @@ export interface Route {
   tripCount: number
   averageRating: number | null
   isSaved?: boolean
+  userId?: number | null
+  isPublic?: boolean
 }
 
 // Database functions
@@ -30,6 +32,7 @@ export async function createRoute(
     .values({
       name,
       coordinates: JSON.stringify(coordinates),
+      is_public: true,
     })
     .executeTakeFirstOrThrow()
 
@@ -49,6 +52,31 @@ export async function createRoute(
   }
 
   return routeId
+}
+
+// Create a user-created route
+export async function createUserRoute(
+  db: Kysely<DB>,
+  userId: number,
+  data: {
+    name: string
+    description?: string
+    coordinates: Array<RouteCoordinate>
+    isPublic?: boolean
+  },
+): Promise<number> {
+  const result = await db
+    .insertInto('routes')
+    .values({
+      name: data.name,
+      description: data.description || null,
+      coordinates: JSON.stringify(data.coordinates),
+      user_id: userId,
+      is_public: data.isPublic ?? true,
+    })
+    .executeTakeFirstOrThrow()
+
+  return Number(result.insertId)
 }
 
 export async function getAllRoutes(
@@ -117,6 +145,8 @@ export async function getAllRoutes(
           ? Number(tripStats.avg_rating)
           : null,
         isSaved: userId ? savedIds.has(route.id) : undefined,
+        userId: route.user_id,
+        isPublic: route.is_public,
       }
     }),
   )
@@ -191,6 +221,8 @@ export async function getRouteById(
     tripCount: Number(tripStats?.count || 0),
     averageRating: tripStats?.avg_rating ? Number(tripStats.avg_rating) : null,
     isSaved,
+    userId: route.user_id,
+    isPublic: route.is_public,
   }
 }
 

@@ -28,9 +28,16 @@ CREATE TABLE IF NOT EXISTS routes (
   name TEXT NOT NULL,
   description TEXT,
   coordinates TEXT NOT NULL,
+  user_id INTEGER, -- NULL for system routes, populated for user-created routes
+  is_public BOOLEAN DEFAULT TRUE, -- Whether route is publicly visible
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Create index for routes user_id
+CREATE INDEX IF NOT EXISTS idx_routes_user_id ON routes(user_id);
+CREATE INDEX IF NOT EXISTS idx_routes_public ON routes(is_public);
 
 -- Create photos table
 CREATE TABLE IF NOT EXISTS photos (
