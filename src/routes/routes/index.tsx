@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 import { toggleSavedRoute } from '@/server/saved-routes'
@@ -15,7 +15,6 @@ export const Route = createFileRoute('/routes/')({
 function RoutesListComponent() {
   const routes = Route.useLoaderData()
   const { user } = Route.useRouteContext()
-  const navigate = useNavigate()
   const [savedRoutes, setSavedRoutes] = useState<Record<string, boolean>>(
     routes.reduce(
       (acc, route) => {
@@ -55,7 +54,6 @@ function RoutesListComponent() {
             isSaved={savedRoutes[route.id]}
             showSaveButton={!!user}
             onSaveClick={handleSaveClick}
-            onClick={(routeId) => navigate({ to: `/routes/${routeId}` })}
           />
         ))}
       </Stack>

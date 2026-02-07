@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Bookmark, BookmarkBorder } from '@mui/icons-material'
+import { Link } from '@tanstack/react-router'
 import type { Route } from '@/db/routes'
 
 interface RouteCardProps {
@@ -14,7 +15,6 @@ interface RouteCardProps {
   isSaved: boolean
   showSaveButton: boolean
   onSaveClick: (e: React.MouseEvent, routeId: string) => void
-  onClick: (routeId: string) => void
 }
 
 export function RouteCard({
@@ -22,16 +22,18 @@ export function RouteCard({
   isSaved,
   showSaveButton,
   onSaveClick,
-  onClick,
 }: RouteCardProps) {
   return (
     <Card sx={{ position: 'relative' }}>
       <CardActionArea
-        onClick={() => onClick(route.id)}
+        component={Link}
+        to={`/routes/${route.id}`}
         sx={{
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           alignItems: 'stretch',
+          textDecoration: 'none',
+          color: 'inherit',
         }}
       >
         {route.photos.length > 0 && (

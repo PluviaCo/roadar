@@ -92,7 +92,6 @@ function HomeComponent() {
               isSaved={savedRoutes[route.id]}
               showSaveButton={!!user}
               onSaveClick={handleSaveClick}
-              onClick={(routeId) => navigate({ to: `/routes/${routeId}` })}
             />
           ))}
         </Stack>
