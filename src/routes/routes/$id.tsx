@@ -1,13 +1,23 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button, Stack, Typography } from '@mui/material'
+import { createFileRoute } from '@tanstack/react-router'
+import { Stack, Typography } from '@mui/material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
-import type { Route as RouteModel } from '@/db/routes'
-import { getRouteById } from '@/db/routes'
+import { createServerFn } from '@tanstack/react-start'
 import RoutePlotter from '@/components/RoutePlotter'
+
+const fetchRoute = createServerFn({ method: 'GET' })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const { env } = await import('cloudflare:workers')
+    const { getDb } = await import('@/db')
+    const { getRouteById } = await import('@/db/routes')
+
+    const db = getDb((env as any).DB)
+    return await getRouteById(db, Number(data.id))
+  })
 
 export const Route = createFileRoute('/routes/$id')({
   loader: async ({ params }) => {
-    const route = await getRouteById(params.id)
+    const route = await fetchRoute({ data: { id: params.id } })
     if (!route) {
       throw new Error(`Route not found: ${params.id}`)
     }
@@ -23,7 +33,6 @@ export const Route = createFileRoute('/routes/$id')({
 
 function RouteDetailComponent() {
   const route = Route.useLoaderData()
-  const navigate = useNavigate()
 
   // Calculate center of the route
   const center =

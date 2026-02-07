@@ -7,19 +7,37 @@ export interface UsersTable {
   name: string
   email: string | null
   picture_url: string | null
-  updated_at: ColumnType<Timestamp, Timestamp, never>
-  created_at: ColumnType<Timestamp, Timestamp, never>
+  updated_at: ColumnType<Date, Date | string | undefined, never>
+  created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
 export interface LineUsersTable {
   id: Generated<number>
   user_id: number
   line_user_id: string
-  updated_at: ColumnType<Timestamp, Timestamp, never>
-  created_at: ColumnType<Timestamp, Timestamp, never>
+  updated_at: ColumnType<Date, Date | string | undefined, never>
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
+export interface RoutesTable {
+  id: Generated<number>
+  name: string
+  coordinates: string // JSON string
+  updated_at: ColumnType<Date, Date | string | undefined, never>
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
+export interface PhotosTable {
+  id: Generated<number>
+  route_id: number
+  url: string
+  updated_at: ColumnType<Date, Date | string | undefined, never>
+  created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
 export interface DB {
   users: UsersTable
   line_users: LineUsersTable
+  routes: RoutesTable
+  photos: PhotosTable
 }

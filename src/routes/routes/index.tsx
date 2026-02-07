@@ -6,11 +6,20 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { getAllRoutes } from '@/db/routes'
+import { createServerFn } from '@tanstack/react-start'
+
+const fetchRoutes = createServerFn({ method: 'GET' }).handler(async () => {
+  const { env } = await import('cloudflare:workers')
+  const { getDb } = await import('@/db')
+  const { getAllRoutes } = await import('@/db/routes')
+
+  const db = getDb((env as any).DB)
+  return await getAllRoutes(db)
+})
 
 export const Route = createFileRoute('/routes/')({
   loader: async () => {
-    return await getAllRoutes()
+    return await fetchRoutes()
   },
   component: RoutesListComponent,
 })

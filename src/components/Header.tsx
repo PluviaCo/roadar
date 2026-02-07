@@ -73,7 +73,7 @@ export function Header() {
                 onClose={handleClose}
               >
                 <MenuItem disabled>{user.email}</MenuItem>
-                <Link to="/settings">
+                <Link to="/signout">
                   <MenuItem>Sign Out</MenuItem>
                 </Link>
               </Menu>
