@@ -11,8 +11,8 @@ export interface CreateTripData {
 }
 
 export const createTrip = createServerFn({ method: 'POST' })
-  .inputValidator((data: { data: CreateTripData }) => data)
-  .handler(async ({ data: { data } }) => {
+  .inputValidator((data: CreateTripData) => data)
+  .handler(async ({ data }) => {
     const { env } = await import('cloudflare:workers')
     const { getDb } = await import('@/db')
     const { createTrip: dbCreateTrip } = await import('@/db/trips')
@@ -21,6 +21,14 @@ export const createTrip = createServerFn({ method: 'POST' })
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')
+    }
+
+    if (!data) {
+      throw new Error('No trip data provided')
+    }
+
+    if (!data.rating || data.rating < 1 || data.rating > 5) {
+      throw new Error(`Rating must be between 1 and 5, got: ${data.rating}`)
     }
 
     const db = getDb((env as any).DB)
@@ -55,7 +63,7 @@ export const createTrip = createServerFn({ method: 'POST' })
       title: data.title,
       notes: data.notes,
       coordinates: data.coordinates,
-      date: new Date(data.date),
+      date: data.date,
       rating: data.rating,
       photoUrls,
     })
@@ -109,8 +117,8 @@ export const fetchTrip = createServerFn({ method: 'GET' })
   })
 
 export const toggleTripLike = createServerFn({ method: 'POST' })
-  .inputValidator((data: { data: { tripId: string } }) => data)
-  .handler(async ({ data: { data } }) => {
+  .inputValidator((data: { tripId: string }) => data)
+  .handler(async ({ data }) => {
     const { env } = await import('cloudflare:workers')
     const { getDb } = await import('@/db')
     const { toggleTripLike: dbToggleTripLike } = await import('@/db/trips')

@@ -1,20 +1,26 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { IconButton, Stack, Typography } from '@mui/material'
-import { Bookmark, BookmarkBorder } from '@mui/icons-material'
+import { Button, IconButton, Stack, Typography } from '@mui/material'
+import { Bookmark, BookmarkBorder, DriveEta } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { useState } from 'react'
 import RoutePlotter from '@/components/RoutePlotter'
 import { PhotoUpload } from '@/components/PhotoUpload'
+import { TripForm } from '@/components/TripForm'
+import { TripCard } from '@/components/TripCard'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoute } from '@/server/routes'
+import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
 
 export const Route = createFileRoute('/routes/$id')({
   loader: async ({ params }) => {
-    const route = await fetchRoute({ data: { id: params.id } })
+    const [route, trips] = await Promise.all([
+      fetchRoute({ data: { id: params.id } }),
+      fetchTripsByRoute({ data: { routeId: params.id } }),
+    ])
     if (!route) {
       throw new Error(`Route not found: ${params.id}`)
     }
-    return route
+    return { route, trips }
   },
   component: RouteDetailComponent,
   errorComponent: ({ error }) => (
@@ -25,9 +31,11 @@ export const Route = createFileRoute('/routes/$id')({
 })
 
 function RouteDetailComponent() {
-  const route = Route.useLoaderData()
+  const { route, trips: initialTrips } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
   const [isSaved, setIsSaved] = useState(route.isSaved || false)
+  const [trips, setTrips] = useState(initialTrips)
+  const [tripFormOpen, setTripFormOpen] = useState(false)
 
   const handleSaveClick = async () => {
     if (!user) return
@@ -42,6 +50,79 @@ function RouteDetailComponent() {
       setIsSaved(!isSaved)
       console.error('Failed to toggle saved route:', error)
     }
+  }
+
+  const handleTripLike = async (tripId: string) => {
+    if (!user) return
+
+    // Optimistic update
+    setTrips((prevTrips) =>
+      prevTrips.map((trip) =>
+        trip.id === tripId
+          ? {
+              ...trip,
+              isLiked: !trip.isLiked,
+              likeCount: trip.isLiked ? trip.likeCount - 1 : trip.likeCount + 1,
+            }
+          : trip,
+      ),
+    )
+
+    try {
+      await toggleTripLike({ data: { tripId } })
+    } catch (error) {
+      // Revert on error
+      setTrips((prevTrips) =>
+        prevTrips.map((trip) =>
+          trip.id === tripId
+            ? {
+                ...trip,
+                isLiked: !trip.isLiked,
+                likeCount: trip.isLiked
+                  ? trip.likeCount + 1
+                  : trip.likeCount - 1,
+              }
+            : trip,
+        ),
+      )
+      console.error('Failed to toggle trip like:', error)
+    }
+  }
+
+  const handlePostTrip = async (data: {
+    rating: number | null
+    title: string
+    notes: string
+    date: string
+    photos: Array<File>
+  }) => {
+    // Convert photos to number arrays for serialization
+    const photoArrays = await Promise.all(
+      data.photos.map(async (file) => {
+        const buffer = await file.arrayBuffer()
+        return Array.from(new Uint8Array(buffer))
+      }),
+    )
+
+    const tripData = {
+      routeId: route.id,
+      title: data.title,
+      notes: data.notes || null,
+      coordinates: route.coordinates,
+      date: data.date,
+      rating: data.rating,
+      photos: photoArrays,
+    }
+
+    await createTrip({
+      data: tripData,
+    })
+
+    // Refresh trips
+    const updatedTrips = await fetchTripsByRoute({
+      data: { routeId: route.id },
+    })
+    setTrips(updatedTrips)
   }
 
   // Calculate center of the route
@@ -61,15 +142,26 @@ function RouteDetailComponent() {
     <Stack spacing={2} padding={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="h1">{route.name}</Typography>
-        {user && (
-          <IconButton onClick={handleSaveClick} size="large">
-            {isSaved ? (
-              <Bookmark color="primary" fontSize="large" />
-            ) : (
-              <BookmarkBorder fontSize="large" />
-            )}
-          </IconButton>
-        )}
+        <Stack direction="row" spacing={1}>
+          {user && (
+            <Button
+              variant="contained"
+              startIcon={<DriveEta />}
+              onClick={() => setTripFormOpen(true)}
+            >
+              Post Trip
+            </Button>
+          )}
+          {user && (
+            <IconButton onClick={handleSaveClick} size="large">
+              {isSaved ? (
+                <Bookmark color="primary" fontSize="large" />
+              ) : (
+                <BookmarkBorder fontSize="large" />
+              )}
+            </IconButton>
+          )}
+        </Stack>
       </Stack>
 
       <Stack
@@ -125,6 +217,36 @@ function RouteDetailComponent() {
           <Typography>No photos available for this route.</Typography>
         )}
       </Stack>
+
+      <Stack spacing={2}>
+        <Typography variant="h6">Trips ({trips.length})</Typography>
+        {trips.length > 0 ? (
+          <Stack spacing={2}>
+            {trips.map((trip) => (
+              <TripCard
+                key={trip.id}
+                trip={trip}
+                showLikeButton={!!user}
+                onLikeClick={handleTripLike}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Typography color="text.secondary">
+            No trips posted yet. Be the first to share your experience!
+          </Typography>
+        )}
+      </Stack>
+
+      {user && (
+        <TripForm
+          open={tripFormOpen}
+          onClose={() => setTripFormOpen(false)}
+          routeId={route.id}
+          routeName={route.name}
+          onSubmit={handlePostTrip}
+        />
+      )}
     </Stack>
   )
 }

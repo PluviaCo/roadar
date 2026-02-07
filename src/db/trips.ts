@@ -24,7 +24,7 @@ export interface CreateTripInput {
   title: string
   notes: string | null
   coordinates: Array<RouteCoordinate>
-  date: Date | string
+  date: string
   rating: number | null
   photoUrls: Array<string>
 }
