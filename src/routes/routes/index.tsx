@@ -1,17 +1,9 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material'
-import { Bookmark, BookmarkBorder } from '@mui/icons-material'
+import { Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoutes } from '@/server/routes'
+import { RouteCard } from '@/components/RouteCard'
 
 export const Route = createFileRoute('/routes/')({
   loader: async () => {
@@ -57,57 +49,14 @@ function RoutesListComponent() {
       </Typography>
       <Stack spacing={2}>
         {routes.map((route) => (
-          <Card key={route.id} sx={{ position: 'relative' }}>
-            <CardActionArea
-              onClick={() => navigate({ to: `/routes/${route.id}` })}
-              sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                alignItems: 'stretch',
-              }}
-            >
-              {route.photos.length > 0 && (
-                <CardMedia
-                  component="img"
-                  image={route.photos[0]}
-                  alt={route.name}
-                  sx={{
-                    width: { xs: '100%', md: 300 },
-                    height: { xs: 200, md: 'auto' },
-                    objectFit: 'cover',
-                  }}
-                />
-              )}
-              <CardContent sx={{ flex: 1 }}>
-                <Typography variant="h5">{route.name}</Typography>
-                <Typography color="textSecondary">
-                  {route.coordinates.length} stops
-                  {route.photos.length > 0 &&
-                    ` • ${route.photos.length} photo${route.photos.length !== 1 ? 's' : ''}`}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-            {user && (
-              <IconButton
-                onClick={(e) => handleSaveClick(e, route.id)}
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  bgcolor: 'rgba(255, 255, 255, 0.8)',
-                  '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.9)',
-                  },
-                }}
-              >
-                {savedRoutes[route.id] ? (
-                  <Bookmark color="primary" />
-                ) : (
-                  <BookmarkBorder />
-                )}
-              </IconButton>
-            )}
-          </Card>
+          <RouteCard
+            key={route.id}
+            route={route}
+            isSaved={savedRoutes[route.id]}
+            showSaveButton={!!user}
+            onSaveClick={handleSaveClick}
+            onClick={(routeId) => navigate({ to: `/routes/${routeId}` })}
+          />
         ))}
       </Stack>
     </Stack>
