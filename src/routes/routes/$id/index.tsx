@@ -4,6 +4,7 @@ import {
   Button,
   IconButton,
   Rating,
+  Snackbar,
   Stack,
   Typography,
 } from '@mui/material'
@@ -14,6 +15,7 @@ import {
   Lock,
   PhotoLibrary,
   Public,
+  Share,
 } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { useState } from 'react'
@@ -52,6 +54,7 @@ function RouteDetailComponent() {
   const [isSaved, setIsSaved] = useState(route.isSaved || false)
   const [trips, setTrips] = useState(initialTrips)
   const [tripFormOpen, setTripFormOpen] = useState(false)
+  const [shareSnackbar, setShareSnackbar] = useState(false)
 
   const handleSaveClick = async () => {
     if (!user) return
@@ -65,6 +68,31 @@ function RouteDetailComponent() {
       // Revert on error
       setIsSaved(!isSaved)
       console.error('Failed to toggle saved route:', error)
+    }
+  }
+
+  const handleShare = async () => {
+    const url = window.location.href
+    const shareData = {
+      title: route.name,
+      text: route.description || `Check out this route: ${route.name}`,
+      url: url,
+    }
+
+    try {
+      // Try Web Share API first (works on mobile)
+      if ('share' in navigator && typeof navigator.share === 'function') {
+        await navigator.share(shareData)
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(url)
+        setShareSnackbar(true)
+      }
+    } catch (error) {
+      // User cancelled or error occurred
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error('Failed to share:', error)
+      }
     }
   }
 
@@ -202,17 +230,25 @@ function RouteDetailComponent() {
           )}
           {/* Show privacy status only if current user owns this route */}
           {route.userId && user?.id === route.userId && (
-            <IconButton onClick={handlePrivacyToggle} size="small">
+            <IconButton
+              onClick={handlePrivacyToggle}
+              sx={{ bgcolor: 'grey.100', '&:hover': { bgcolor: 'grey.200' } }}
+            >
               {route.isPublic ? <Public /> : <Lock />}
             </IconButton>
           )}
+          <IconButton
+            onClick={handleShare}
+            sx={{ bgcolor: 'grey.100', '&:hover': { bgcolor: 'grey.200' } }}
+          >
+            <Share />
+          </IconButton>
           {user && (
-            <IconButton onClick={handleSaveClick} size="large">
-              {isSaved ? (
-                <Favorite fontSize="large" />
-              ) : (
-                <FavoriteBorder fontSize="large" />
-              )}
+            <IconButton
+              onClick={handleSaveClick}
+              sx={{ bgcolor: 'grey.100', '&:hover': { bgcolor: 'grey.200' } }}
+            >
+              {isSaved ? <Favorite /> : <FavoriteBorder />}
             </IconButton>
           )}
         </Stack>
@@ -325,6 +361,13 @@ function RouteDetailComponent() {
           onSubmit={handlePostTrip}
         />
       )}
+
+      <Snackbar
+        open={shareSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setShareSnackbar(false)}
+        message="Link copied to clipboard!"
+      />
     </Stack>
   )
 }
