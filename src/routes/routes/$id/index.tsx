@@ -2,7 +2,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import {
   Box,
   Button,
-  Chip,
   IconButton,
   Rating,
   Stack,
@@ -13,19 +12,20 @@ import {
   Favorite,
   FavoriteBorder,
   Lock,
+  PhotoLibrary,
   Public,
 } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { useState } from 'react'
 import RoutePlotter from '@/components/RoutePlotter'
-import { PhotoUpload } from '@/components/PhotoUpload'
 import { TripForm } from '@/components/TripForm'
 import { TripCard } from '@/components/TripCard'
+import { CustomButtonLink } from '@/components/CustomButtonLink'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoute, updateRoutePrivacy } from '@/server/routes'
 import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
 
-export const Route = createFileRoute('/routes/$id')({
+export const Route = createFileRoute('/routes/$id/')({
   loader: async ({ params }) => {
     const [route, trips] = await Promise.all([
       fetchRoute({ data: { id: params.id } }),
@@ -257,6 +257,55 @@ function RouteDetailComponent() {
         </Typography>
       )}
 
+      {/* Photos Section - Show limited preview */}
+      {route.photos.length > 0 && (
+        <Box>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: '16px',
+              marginBottom: '16px',
+            }}
+          >
+            {route.photos.slice(0, 8).map((photo, index) => (
+              <img
+                key={index}
+                src={photo}
+                alt={`Route photo ${index + 1}`}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '8px',
+                }}
+              />
+            ))}
+          </div>
+          <CustomButtonLink
+            variant="outlined"
+            startIcon={<PhotoLibrary />}
+            to="/routes/$id/photos"
+            params={{ id: route.id }}
+          >
+            {route.photos.length > 8
+              ? `See all ${route.photos.length} photos`
+              : `See all photos${user ? ' & upload' : ''}`}
+          </CustomButtonLink>
+        </Box>
+      )}
+
+      {/* Show button if no photos but user can upload */}
+      {route.photos.length === 0 && user && (
+        <CustomButtonLink
+          variant="outlined"
+          startIcon={<PhotoLibrary />}
+          to="/routes/$id/photos"
+          params={{ id: route.id }}
+        >
+          Add photos
+        </CustomButtonLink>
+      )}
+
       <Stack
         sx={{
           border: '1px solid #ccc',
@@ -280,35 +329,6 @@ function RouteDetailComponent() {
         <Typography>
           Total Stops: <strong>{route.coordinates.length}</strong>
         </Typography>
-      </Stack>
-
-      <Stack spacing={1}>
-        <Typography variant="h6">Photos</Typography>
-        {user && <PhotoUpload routeId={route.id} />}
-        {route.photos.length > 0 ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            {route.photos.map((photo, index) => (
-              <img
-                key={index}
-                src={photo}
-                alt={`Route photo ${index + 1}`}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '8px',
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          <Typography>No photos available for this route.</Typography>
-        )}
       </Stack>
 
       <Stack spacing={2}>

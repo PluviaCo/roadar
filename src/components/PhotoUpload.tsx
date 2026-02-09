@@ -56,7 +56,7 @@ export function PhotoUpload({ routeId }: { routeId: string }) {
   }
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
       <Button
         component="label"
         variant="contained"
