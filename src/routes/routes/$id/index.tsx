@@ -45,6 +45,7 @@ export const Route = createFileRoute('/routes/$id/')({
 })
 
 function RouteDetailComponent() {
+  const photosDisplayCount = 4
   const { route: initialRoute, trips: initialTrips } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
   const [route, setRoute] = useState(initialRoute)
@@ -268,7 +269,7 @@ function RouteDetailComponent() {
               marginBottom: '16px',
             }}
           >
-            {route.photos.slice(0, 8).map((photo, index) => (
+            {route.photos.slice(0, photosDisplayCount).map((photo, index) => (
               <img
                 key={index}
                 src={photo}
@@ -287,9 +288,7 @@ function RouteDetailComponent() {
             to="/routes/$id/photos"
             params={{ id: route.id }}
           >
-            {route.photos.length > 8
-              ? `See all ${route.photos.length} photos`
-              : `See all photos${user ? ' & upload' : ''}`}
+            {`${route.photos.length} photos`}
           </CustomButtonLink>
         </Box>
       )}
