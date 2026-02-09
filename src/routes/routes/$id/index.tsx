@@ -176,12 +176,8 @@ function RouteDetailComponent() {
     <Stack spacing={2} padding={2}>
       <Typography variant="h1">{route.name}</Typography>
 
-      {route.averageRating ? (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        {route.averageRating ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Rating value={route.averageRating} precision={0.1} readOnly />
             <Typography variant="body1" fontWeight="medium">
@@ -191,40 +187,10 @@ function RouteDetailComponent() {
               ({route.tripCount} trip{route.tripCount !== 1 ? 's' : ''})
             </Typography>
           </Box>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            {user && (
-              <Button
-                variant="contained"
-                startIcon={<DriveEta />}
-                onClick={() => setTripFormOpen(true)}
-              >
-                Post Trip
-              </Button>
-            )}
-            {/* Show privacy status only if current user owns this route */}
-            {route.userId && user?.id === route.userId && (
-              <IconButton onClick={handlePrivacyToggle} size="small">
-                {route.isPublic ? <Public /> : <Lock />}
-              </IconButton>
-            )}
-            {user && (
-              <IconButton onClick={handleSaveClick} size="large">
-                {isSaved ? (
-                  <Favorite fontSize="large" />
-                ) : (
-                  <FavoriteBorder fontSize="large" />
-                )}
-              </IconButton>
-            )}
-          </Stack>
-        </Stack>
-      ) : (
-        <Stack
-          direction="row"
-          justifyContent="flex-end"
-          alignItems="center"
-          spacing={1}
-        >
+        ) : (
+          <span></span>
+        )}
+        <Stack direction="row" alignItems="center" spacing={1}>
           {user && (
             <Button
               variant="contained"
@@ -236,7 +202,7 @@ function RouteDetailComponent() {
           )}
           {/* Show privacy status only if current user owns this route */}
           {route.userId && user?.id === route.userId && (
-            <IconButton onClick={handlePrivacyToggle}>
+            <IconButton onClick={handlePrivacyToggle} size="small">
               {route.isPublic ? <Public /> : <Lock />}
             </IconButton>
           )}
@@ -250,7 +216,7 @@ function RouteDetailComponent() {
             </IconButton>
           )}
         </Stack>
-      )}
+      </Stack>
 
       {route.description && (
         <Typography variant="body1" color="textSecondary">

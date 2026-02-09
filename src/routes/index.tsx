@@ -10,7 +10,6 @@ import {
 } from '@mui/material'
 import { ArrowForward, LocationOn, Search } from '@mui/icons-material'
 import { useState } from 'react'
-import type { Route as RouteType } from '@/db/routes'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoutes } from '@/server/routes'
 import { RouteCard } from '@/components/RouteCard'
@@ -18,7 +17,6 @@ import { RouteCard } from '@/components/RouteCard'
 export const Route = createFileRoute('/')({
   loader: async () => {
     const routes = await fetchRoutes()
-    // Return all routes for searching
     return routes
   },
   component: HomeComponent,
