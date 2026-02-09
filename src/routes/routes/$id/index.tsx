@@ -26,6 +26,7 @@ import { CustomButtonLink } from '@/components/CustomButtonLink'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoute, updateRoutePrivacy } from '@/server/routes'
 import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
+import { formatDistance, formatDuration } from '@/lib/route-utils'
 
 export const Route = createFileRoute('/routes/$id/')({
   loader: async ({ params }) => {
@@ -327,6 +328,16 @@ function RouteDetailComponent() {
 
       <Stack spacing={1}>
         <Typography variant="h6">Route Details</Typography>
+        {route.distance != null && (
+          <Typography>
+            Distance: <strong>{formatDistance(route.distance)}</strong>
+          </Typography>
+        )}
+        {route.duration != null && (
+          <Typography>
+            Estimated Duration: <strong>{formatDuration(route.duration)}</strong>
+          </Typography>
+        )}
         <Typography>
           Total Stops: <strong>{route.coordinates.length}</strong>
         </Typography>

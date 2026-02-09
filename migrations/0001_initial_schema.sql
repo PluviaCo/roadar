@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS routes (
   coordinates TEXT NOT NULL,
   user_id INTEGER, -- NULL for system routes, populated for user-created routes
   is_public BOOLEAN DEFAULT TRUE, -- Whether route is publicly visible
+  distance INTEGER, -- Distance in meters from Google Maps API
+  duration INTEGER, -- Duration in seconds from Google Maps API
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

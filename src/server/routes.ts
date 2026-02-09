@@ -62,6 +62,7 @@ export const createRoute = createServerFn({ method: 'POST' })
     const { getDb } = await import('@/db')
     const { createUserRoute } = await import('@/db/routes')
     const { useAppSession } = await import('@/lib/session')
+    const { calculateRouteMetrics } = await import('@/lib/route-utils')
 
     const session = await useAppSession()
     if (!session.data.id) {
@@ -76,12 +77,27 @@ export const createRoute = createServerFn({ method: 'POST' })
       throw new Error('At least 2 coordinates are required for a route')
     }
 
+    // Calculate distance and duration using Google Maps API
+    const apiKey = (env as any).GOOGLE_MAPS_API_KEY
+    let distance: number | null = null
+    let duration: number | null = null
+
+    if (apiKey) {
+      const metrics = await calculateRouteMetrics(data.coordinates, apiKey)
+      if (metrics) {
+        distance = metrics.distance
+        duration = metrics.duration
+      }
+    }
+
     const db = getDb((env as any).DB)
     const routeId = await createUserRoute(db, session.data.id, {
       name: data.name.trim(),
       description: data.description?.trim(),
       coordinates: data.coordinates,
       isPublic: data.isPublic ?? true,
+      distance,
+      duration,
     })
 
     return { routeId }
@@ -92,7 +108,8 @@ export const updateRoutePrivacy = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { env } = await import('cloudflare:workers')
     const { getDb } = await import('@/db')
-    const { updateRoutePrivacy } = await import('@/db/routes')
+    const { updateRoutePrivacy: updateRoutePrivacyDb } =
+      await import('@/db/routes')
     const { useAppSession } = await import('@/lib/session')
 
     const session = await useAppSession()
@@ -101,7 +118,7 @@ export const updateRoutePrivacy = createServerFn({ method: 'POST' })
     }
 
     const db = getDb((env as any).DB)
-    await updateRoutePrivacy(
+    await updateRoutePrivacyDb(
       db,
       Number(data.routeId),
       session.data.id,

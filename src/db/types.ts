@@ -26,6 +26,8 @@ export interface RoutesTable {
   coordinates: string // JSON string
   user_id: number | null // NULL for system routes, populated for user-created routes
   is_public: boolean
+  distance: number | null // Distance in meters from Google Maps API
+  duration: number | null // Duration in seconds from Google Maps API
   updated_at: ColumnType<Date, Date | string | undefined, never>
   created_at: ColumnType<Date, Date | string | undefined, never>
 }

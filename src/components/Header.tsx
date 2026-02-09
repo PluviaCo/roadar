@@ -11,7 +11,6 @@ import {
 } from '@mui/material'
 import { Link, useRouteContext } from '@tanstack/react-router'
 import { useState } from 'react'
-import UserIcon from '@mui/icons-material/Person'
 import { CustomLink } from './CustomLink'
 import Logo from '@/assets/logo.svg'
 

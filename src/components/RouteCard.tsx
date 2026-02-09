@@ -7,15 +7,10 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import {
-  Bookmark,
-  BookmarkBorder,
-  Favorite,
-  FavoriteBorder,
-  Star,
-} from '@mui/icons-material'
+import { Favorite, FavoriteBorder, Star } from '@mui/icons-material'
 import { Link } from '@tanstack/react-router'
 import type { Route } from '@/db/routes'
+import { formatDistance, formatDuration } from '@/lib/route-utils'
 
 interface RouteCardProps {
   route: Route
@@ -83,6 +78,10 @@ export function RouteCard({
               </Box>
             )}
             <Typography color="textSecondary" variant="body2">
+              {route.distance != null && formatDistance(route.distance)}
+              {route.duration != null && route.distance != null && ' • '}
+              {route.duration != null && formatDuration(route.duration)}
+              {(route.distance != null || route.duration != null) && ' • '}
               {route.coordinates.length} stops
               {route.tripCount > 0 &&
                 ` • ${route.tripCount} trip${route.tripCount !== 1 ? 's' : ''}`}

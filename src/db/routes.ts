@@ -14,6 +14,8 @@ export interface Route {
   photos: Array<string>
   tripCount: number
   averageRating: number | null
+  distance: number | null // Distance in meters
+  duration: number | null // Duration in seconds
   isSaved?: boolean
   userId?: number | null
   isPublic?: boolean
@@ -25,6 +27,8 @@ export async function createRoute(
   name: string,
   coordinates: Array<RouteCoordinate>,
   photoUrls: Array<string>,
+  distance?: number | null,
+  duration?: number | null,
 ): Promise<number> {
   // Insert route
   const result = await db
@@ -33,6 +37,8 @@ export async function createRoute(
       name,
       coordinates: JSON.stringify(coordinates),
       is_public: true,
+      distance: distance ?? null,
+      duration: duration ?? null,
     })
     .executeTakeFirstOrThrow()
 
@@ -63,6 +69,8 @@ export async function createUserRoute(
     description?: string
     coordinates: Array<RouteCoordinate>
     isPublic?: boolean
+    distance?: number | null
+    duration?: number | null
   },
 ): Promise<number> {
   const result = await db
@@ -73,6 +81,8 @@ export async function createUserRoute(
       coordinates: JSON.stringify(data.coordinates),
       user_id: userId,
       is_public: data.isPublic ?? true,
+      distance: data.distance ?? null,
+      duration: data.duration ?? null,
     })
     .executeTakeFirstOrThrow()
 
@@ -153,6 +163,8 @@ export async function getAllRoutes(
         averageRating: tripStats?.avg_rating
           ? Number(tripStats.avg_rating)
           : null,
+        distance: route.distance,
+        duration: route.duration,
         isSaved: userId ? savedIds.has(route.id) : undefined,
         userId: route.user_id,
         isPublic: route.is_public,
@@ -227,6 +239,8 @@ export async function getUserRoutes(
         averageRating: tripStats?.avg_rating
           ? Number(tripStats.avg_rating)
           : null,
+        distance: route.distance,
+        duration: route.duration,
         isSaved: savedIds.has(route.id),
         userId: route.user_id,
         isPublic: route.is_public,
@@ -319,6 +333,8 @@ export async function getRouteById(
     photos: allPhotos,
     tripCount: Number(tripStats?.count || 0),
     averageRating: tripStats?.avg_rating ? Number(tripStats.avg_rating) : null,
+    distance: route.distance,
+    duration: route.duration,
     isSaved,
     userId: route.user_id,
     isPublic: route.is_public,
