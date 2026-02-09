@@ -326,22 +326,30 @@ function RouteDetailComponent() {
         </APIProvider>
       </Stack>
 
-      <Stack spacing={1}>
-        <Typography variant="h6">Route Details</Typography>
-        {route.distance != null && (
-          <Typography>
-            Distance: <strong>{formatDistance(route.distance)}</strong>
-          </Typography>
-        )}
-        {route.duration != null && (
-          <Typography>
-            Estimated Duration: <strong>{formatDuration(route.duration)}</strong>
-          </Typography>
-        )}
-        <Typography>
-          Total Stops: <strong>{route.coordinates.length}</strong>
-        </Typography>
-      </Stack>
+      {(route.distance != null || route.duration != null) && (
+        <Stack direction="row" spacing={4}>
+          {route.distance != null && (
+            <Box>
+              <Typography variant="h3" fontWeight="bold">
+                {formatDistance(route.distance)}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                Distance
+              </Typography>
+            </Box>
+          )}
+          {route.duration != null && (
+            <Box>
+              <Typography variant="h3" fontWeight="bold">
+                {formatDuration(route.duration)}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                Duration
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      )}
 
       <Stack spacing={2}>
         <Typography variant="h6">Trips</Typography>
