@@ -178,7 +178,7 @@ const fetchRoutes = createServerFn({ method: 'GET' }).handler(async () => {
 
 ### Icons
 
-- Saved routes: Bookmark icon (🔖) - `<Bookmark />` / `<BookmarkBorder />`
+- Saved routes: Heart icon (❤️) - `<Favorite />` / `<FavoriteBorder />`
 - Photos: Upload cloud icon - `<CloudUpload />`
 
 ### Responsive Design

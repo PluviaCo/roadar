@@ -9,9 +9,9 @@ import {
   Typography,
 } from '@mui/material'
 import {
-  Bookmark,
-  BookmarkBorder,
   DriveEta,
+  Favorite,
+  FavoriteBorder,
   Lock,
   Public,
 } from '@mui/icons-material'
@@ -209,9 +209,9 @@ function RouteDetailComponent() {
             {user && (
               <IconButton onClick={handleSaveClick} size="large">
                 {isSaved ? (
-                  <Bookmark color="primary" fontSize="large" />
+                  <Favorite fontSize="large" />
                 ) : (
-                  <BookmarkBorder fontSize="large" />
+                  <FavoriteBorder fontSize="large" />
                 )}
               </IconButton>
             )}
@@ -242,9 +242,9 @@ function RouteDetailComponent() {
           {user && (
             <IconButton onClick={handleSaveClick} size="large">
               {isSaved ? (
-                <Bookmark color="primary" fontSize="large" />
+                <Favorite fontSize="large" />
               ) : (
-                <BookmarkBorder fontSize="large" />
+                <FavoriteBorder fontSize="large" />
               )}
             </IconButton>
           )}

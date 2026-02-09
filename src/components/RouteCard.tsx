@@ -7,7 +7,13 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import { Bookmark, BookmarkBorder, Star } from '@mui/icons-material'
+import {
+  Bookmark,
+  BookmarkBorder,
+  Favorite,
+  FavoriteBorder,
+  Star,
+} from '@mui/icons-material'
 import { Link } from '@tanstack/react-router'
 import type { Route } from '@/db/routes'
 
@@ -99,7 +105,7 @@ export function RouteCard({
             },
           }}
         >
-          {isSaved ? <Bookmark color="primary" /> : <BookmarkBorder />}
+          {isSaved ? <Favorite /> : <FavoriteBorder />}
         </IconButton>
       )}
     </Card>
