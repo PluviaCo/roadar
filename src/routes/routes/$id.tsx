@@ -191,12 +191,6 @@ function RouteDetailComponent() {
             </Typography>
           </Box>
           <Stack direction="row" alignItems="center" spacing={1}>
-            {/* Show privacy status only if current user owns this route */}
-            {route.userId && user?.id === route.userId && (
-              <IconButton onClick={handlePrivacyToggle} size="small">
-                {route.isPublic ? <Public /> : <Lock />}
-              </IconButton>
-            )}
             {user && (
               <Button
                 variant="contained"
@@ -205,6 +199,12 @@ function RouteDetailComponent() {
               >
                 Post Trip
               </Button>
+            )}
+            {/* Show privacy status only if current user owns this route */}
+            {route.userId && user?.id === route.userId && (
+              <IconButton onClick={handlePrivacyToggle} size="small">
+                {route.isPublic ? <Public /> : <Lock />}
+              </IconButton>
             )}
             {user && (
               <IconButton onClick={handleSaveClick} size="large">
@@ -224,12 +224,6 @@ function RouteDetailComponent() {
           alignItems="center"
           spacing={1}
         >
-          {/* Show privacy status only if current user owns this route */}
-          {route.userId && user?.id === route.userId && (
-            <IconButton onClick={handlePrivacyToggle} size="small">
-              {route.isPublic ? <Public /> : <Lock />}
-            </IconButton>
-          )}
           {user && (
             <Button
               variant="contained"
@@ -238,6 +232,12 @@ function RouteDetailComponent() {
             >
               Post Trip
             </Button>
+          )}
+          {/* Show privacy status only if current user owns this route */}
+          {route.userId && user?.id === route.userId && (
+            <IconButton onClick={handlePrivacyToggle}>
+              {route.isPublic ? <Public /> : <Lock />}
+            </IconButton>
           )}
           {user && (
             <IconButton onClick={handleSaveClick} size="large">
