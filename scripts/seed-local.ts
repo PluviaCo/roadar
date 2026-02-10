@@ -16,6 +16,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+2',
       'https://placehold.co/600x400?text=Photo+3',
     ],
+    duration: 900, // 15 min in seconds
+    distance: 3200, // 3.2 km in meters
   },
   {
     name: 'Airport Express',
@@ -31,6 +33,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+1',
       'https://placehold.co/600x400?text=Photo+2',
     ],
+    duration: 1320, // 22 min in seconds
+    distance: 5500, // 5.5 km in meters
   },
   {
     name: 'Waterfront Route',
@@ -47,6 +51,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+2',
       'https://placehold.co/600x400?text=Photo+3',
     ],
+    duration: 1740, // 29 min in seconds
+    distance: 8000, // 8.0 km in meters
   },
   {
     name: 'Suburban Connector',
@@ -62,6 +68,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+1',
       'https://placehold.co/600x400?text=Photo+2',
     ],
+    duration: 2160, // 36 min in seconds
+    distance: 10500, // 10.5 km in meters
   },
   {
     name: 'Shopping District',
@@ -78,6 +86,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+2',
       'https://placehold.co/600x400?text=Photo+3',
     ],
+    duration: 2580, // 43 min in seconds
+    distance: 13000, // 13.0 km in meters
   },
   {
     name: 'University Shuttle',
@@ -90,6 +100,8 @@ const mockRoutes = [
       { lat: 35.725, lng: 139.745 },
     ],
     photos: ['https://placehold.co/600x400?text=Photo+1'],
+    duration: 3000, // 50 min in seconds
+    distance: 15500, // 15.5 km in meters
   },
   {
     name: 'Business Park Loop',
@@ -106,6 +118,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+2',
       'https://placehold.co/600x400?text=Photo+3',
     ],
+    duration: 3420, // 57 min in seconds
+    distance: 18000, // 18.0 km in meters
   },
   {
     name: 'Harbor Transit',
@@ -124,6 +138,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+4',
       'https://placehold.co/600x400?text=Photo+5',
     ],
+    duration: 3840, // 64 min in seconds
+    distance: 20500, // 20.5 km in meters
   },
   {
     name: 'Historic District Tour',
@@ -140,6 +156,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+2',
       'https://placehold.co/600x400?text=Photo+3',
     ],
+    duration: 4260, // 71 min in seconds
+    distance: 23000, // 23.0 km in meters
   },
   {
     name: 'Park Circuit',
@@ -156,6 +174,8 @@ const mockRoutes = [
       'https://placehold.co/600x400?text=Photo+2',
       'https://placehold.co/600x400?text=Photo+3',
     ],
+    duration: 4680, // 78 min in seconds
+    distance: 25500, // 25.5 km in meters
   },
 ]
 
@@ -182,7 +202,7 @@ for (const route of mockRoutes) {
     : null
 
   sqlStatements.push(
-    `INSERT INTO routes (id, name, description, coordinates, updated_at, created_at) VALUES (${routeId}, '${name}', ${description ? `'${description}'` : 'NULL'}, '${coordsJson}', datetime('now'), datetime('now'));`,
+    `INSERT INTO routes (id, name, description, coordinates, duration, distance, updated_at, created_at) VALUES (${routeId}, '${name}', ${description ? `'${description}'` : 'NULL'}, '${coordsJson}', ${route.duration}, ${route.distance}, datetime('now'), datetime('now'));`,
   )
 
   for (const photoUrl of route.photos) {
