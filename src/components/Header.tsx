@@ -62,7 +62,20 @@ export function Header() {
             {!isHome && (
               <RouteSearchBar
                 routes={routes}
-                sx={{ flexGrow: 1, width: '100%', minWidth: 0 }}
+                sx={{
+                  flexGrow: 1,
+                  width: '100%',
+                  minWidth: 0,
+                  '& .MuiOutlinedInput-root': {
+                    border: '1px solid',
+                    borderColor: 'grey.300',
+                    backgroundColor: 'white',
+                    height: 44,
+                    '& fieldset': {
+                      border: 'none',
+                    },
+                  },
+                }}
               />
             )}
           </Box>

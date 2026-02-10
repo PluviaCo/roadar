@@ -68,7 +68,20 @@ function HomeComponent() {
             Explore, save, and share your favorite routes with photos
           </Typography>
           {/* Search Bar with Dropdown */}
-          <RouteSearchBar routes={routes} sx={{ mb: 3 }} />
+          <RouteSearchBar
+            routes={routes}
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 999,
+                backgroundColor: 'white',
+                '& fieldset': {
+                  borderColor: 'transparent',
+                  border: 'none',
+                },
+              },
+            }}
+          />
           <Button
             variant="contained"
             size="large"

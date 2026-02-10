@@ -8,14 +8,13 @@ export function RouteSearchBar({
   routes,
   sx,
 }: {
-  routes: Array<Route>
+  routes: Array<any>
   sx?: any
 }) {
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
-
   return (
-    <Box sx={sx}>
+    <Box sx={{ ...sx, minWidth: 0 }}>
       <Autocomplete
         freeSolo
         options={routes}
@@ -52,12 +51,13 @@ export function RouteSearchBar({
                 </>
               ),
             }}
+            sx={{ width: '100%', borderRadius: 999 }}
           />
         )}
         renderOption={(props, option) => (
           <Box component="li" {...props} sx={{ gap: 2 }}>
             {/* Image or Icon */}
-            {option.photos.length > 0 ? (
+            {option.photos && option.photos.length > 0 ? (
               <Box
                 component="img"
                 src={option.photos[0]}
@@ -109,8 +109,10 @@ export function RouteSearchBar({
         )}
         sx={{
           backgroundColor: 'white',
-          borderRadius: 1,
+          width: '100%',
+          borderRadius: 999,
           '& .MuiOutlinedInput-root': {
+            borderRadius: 999,
             '& fieldset': {
               borderColor: 'transparent',
             },
