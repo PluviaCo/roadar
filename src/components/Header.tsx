@@ -9,10 +9,12 @@ import {
   css,
   styled,
 } from '@mui/material'
-import { Link, useRouteContext } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Link, useMatchRoute, useRouteContext } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { CustomLink } from './CustomLink'
+import { RouteSearchBar } from './RouteSearchBar'
 import Logo from '@/assets/logo.svg'
+import { fetchRoutes } from '@/server/routes'
 
 const StyledCustomLink = styled(CustomLink)(
   ({ theme }) => css`
@@ -27,6 +29,17 @@ export function Header() {
   const { user } = useRouteContext({ from: '__root__' })
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  const [routes, setRoutes] = useState<Array<any>>([])
+  const matchRoute = useMatchRoute()
+
+  // Only show search if not on home page
+  const isHome = matchRoute({ to: '/' })
+
+  useEffect(() => {
+    if (routes.length === 0) {
+      fetchRoutes().then(setRoutes)
+    }
+  }, [routes.length])
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -44,53 +57,71 @@ export function Header() {
             <img src={Logo} alt="Roadar" width="24" height="24" />
           </StyledCustomLink>
           <StyledCustomLink to="/routes">Routes</StyledCustomLink>
-          <Box sx={{ flexGrow: 1 }} />
-          {user ? (
-            <>
-              <StyledCustomLink to="/saved">Saved</StyledCustomLink>
-              <StyledCustomLink to="/routes/my">My Routes</StyledCustomLink>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <Avatar
-                  src={user.picture_url}
-                  alt={user.name}
-                  sx={{ width: 32, height: 32 }}
+          {/* Search bar, only show if not on home page */}
+          <Box sx={{ display: 'flex', flexGrow: 1, minWidth: 0, mx: 2 }}>
+            {!isHome && (
+              <RouteSearchBar
+                routes={routes}
+                sx={{ flexGrow: 1, width: '100%', minWidth: 0 }}
+              />
+            )}
+          </Box>
+          <Box
+            sx={{
+              flexGrow: 0,
+              display: 'flex',
+              gap: 2,
+              alignItems: 'center',
+              minWidth: 0,
+            }}
+          >
+            {user ? (
+              <>
+                <StyledCustomLink to="/saved">Saved</StyledCustomLink>
+                <StyledCustomLink to="/routes/my">My Routes</StyledCustomLink>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
                 >
-                  {user.picture_url ? undefined : user.name.charAt(0)}
-                </Avatar>
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem disabled>{user.name}</MenuItem>
-                <Link to="/settings">
-                  <MenuItem onClick={handleClose}>Settings</MenuItem>
-                </Link>
-                <Link to="/signout">
-                  <MenuItem>Sign Out</MenuItem>
-                </Link>
-              </Menu>
-            </>
-          ) : (
-            <StyledCustomLink to="/signin">Sign In</StyledCustomLink>
-          )}
+                  <Avatar
+                    src={user.picture_url}
+                    alt={user.name}
+                    sx={{ width: 32, height: 32 }}
+                  >
+                    {user.picture_url ? undefined : user.name.charAt(0)}
+                  </Avatar>
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem disabled>{user.name}</MenuItem>
+                  <Link to="/settings">
+                    <MenuItem onClick={handleClose}>Settings</MenuItem>
+                  </Link>
+                  <Link to="/signout">
+                    <MenuItem>Sign Out</MenuItem>
+                  </Link>
+                </Menu>
+              </>
+            ) : (
+              <StyledCustomLink to="/signin">Sign In</StyledCustomLink>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
