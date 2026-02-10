@@ -6,6 +6,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Typography,
   css,
   styled,
 } from '@mui/material'
@@ -71,9 +72,9 @@ export function Header() {
                     borderColor: 'grey.300',
                     backgroundColor: 'white',
                     height: 44,
-                    '& fieldset': {
-                      border: 'none',
-                    },
+                    // '& fieldset': {
+                    //   border: 'none',
+                    // },
                   },
                 }}
               />
@@ -122,13 +123,19 @@ export function Header() {
                   open={open}
                   onClose={handleClose}
                 >
-                  <MenuItem disabled>{user.name}</MenuItem>
-                  <Link to="/settings">
-                    <MenuItem onClick={handleClose}>Settings</MenuItem>
-                  </Link>
-                  <Link to="/signout">
-                    <MenuItem>Sign Out</MenuItem>
-                  </Link>
+                  <MenuItem disabled>
+                    <Typography variant="body1">{user.name}</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleClose}
+                    component={Link}
+                    to="/settings"
+                  >
+                    Settings
+                  </MenuItem>
+                  <MenuItem to="/signout" component={Link}>
+                    Sign Out
+                  </MenuItem>
                 </Menu>
               </>
             ) : (
