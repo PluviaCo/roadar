@@ -310,8 +310,7 @@ function RouteDetailComponent() {
 
       <Stack
         sx={{
-          border: '1px solid #ccc',
-          borderRadius: 1,
+          borderRadius: 4,
           overflow: 'hidden',
         }}
       >
