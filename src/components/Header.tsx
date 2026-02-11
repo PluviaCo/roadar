@@ -55,7 +55,7 @@ export function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
         <Container>
-          <Toolbar sx={{ gap: 2 }}>
+          <Toolbar sx={{ gap: 2 }} disableGutters={true}>
             <StyledCustomLink to="/">
               <img src={Logo} alt="Roadar" width="24" height="24" />
             </StyledCustomLink>
