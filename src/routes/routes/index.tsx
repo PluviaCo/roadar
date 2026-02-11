@@ -4,7 +4,8 @@ import { useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoutes } from '@/server/routes'
-import { RouteCard } from '@/components/RouteCard'
+import { RoutesList } from '@/components/RoutesList'
+import { RoutesMap } from '@/components/RoutesMap'
 
 export const Route = createFileRoute('/routes/')({
   loader: async () => {
@@ -43,7 +44,7 @@ function RoutesListComponent() {
   }
 
   return (
-    <Stack spacing={2} padding={2}>
+    <Stack spacing={2} padding={2} sx={{ height: '100vh' }}>
       <Box
         sx={{
           display: 'flex',
@@ -61,17 +62,56 @@ function RoutesListComponent() {
           </Link>
         )}
       </Box>
-      <Stack spacing={2}>
-        {routes.map((route) => (
-          <RouteCard
-            key={route.id}
-            route={route}
-            isSaved={savedRoutes[route.id]}
-            showSaveButton={!!user}
+      <Box sx={{ display: 'flex', gap: 2, flex: 1, overflow: 'hidden' }}>
+        {/* List on the left */}
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: 'auto',
+            pr: 1,
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              bgcolor: 'rgba(0, 0, 0, 0.05)',
+              borderRadius: 1,
+            },
+            '&::-webkit-scrollbar-thumb': {
+              bgcolor: 'rgba(0, 0, 0, 0.2)',
+              borderRadius: 1,
+              '&:hover': {
+                bgcolor: 'rgba(0, 0, 0, 0.3)',
+              },
+            },
+          }}
+        >
+          <RoutesList
+            routes={routes}
+            savedRoutes={savedRoutes}
+            user={user}
             onSaveClick={handleSaveClick}
           />
-        ))}
-      </Stack>
+        </Box>
+        {/* Map on the right */}
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 500,
+            height: '100%',
+            borderRadius: 1,
+            overflow: 'hidden',
+            bgcolor: '#f5f5f5',
+            pointerEvents: 'auto',
+          }}
+        >
+          <RoutesMap
+            routes={routes}
+            savedRoutes={savedRoutes}
+            user={user}
+            onSaveClick={handleSaveClick}
+          />
+        </Box>
+      </Box>
     </Stack>
   )
 }
