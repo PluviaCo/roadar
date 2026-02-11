@@ -27,6 +27,7 @@ import { toggleSavedRoute } from '@/server/saved-routes'
 import { fetchRoute, updateRoutePrivacy } from '@/server/routes'
 import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
 import { formatDistance, formatDuration } from '@/lib/route-utils'
+import { useSnackbar } from '@/components/SnackbarProvider'
 
 export const Route = createFileRoute('/routes/$id/')({
   loader: async ({ params }) => {
@@ -51,11 +52,11 @@ function RouteDetailComponent() {
   const photosDisplayCount = 4
   const { route: initialRoute, trips: initialTrips } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
+  const { showSnack } = useSnackbar()
   const [route, setRoute] = useState(initialRoute)
   const [isSaved, setIsSaved] = useState(route.isSaved || false)
   const [trips, setTrips] = useState(initialTrips)
   const [tripFormOpen, setTripFormOpen] = useState(false)
-  const [shareSnackbar, setShareSnackbar] = useState(false)
 
   const handleSaveClick = async () => {
     if (!user) return
@@ -87,7 +88,7 @@ function RouteDetailComponent() {
       } else {
         // Fallback to clipboard
         await navigator.clipboard.writeText(url)
-        setShareSnackbar(true)
+        showSnack('Link copied to clipboard!')
       }
     } catch (error) {
       // User cancelled or error occurred
@@ -379,13 +380,6 @@ function RouteDetailComponent() {
           onSubmit={handlePostTrip}
         />
       )}
-
-      <Snackbar
-        open={shareSnackbar}
-        autoHideDuration={3000}
-        onClose={() => setShareSnackbar(false)}
-        message="Link copied to clipboard!"
-      />
     </Stack>
   )
 }
