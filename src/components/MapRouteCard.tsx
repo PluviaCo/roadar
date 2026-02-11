@@ -70,7 +70,7 @@ export function MapRouteCard({
           </Typography>
           {route.averageRating && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Star sx={{ fontSize: 16, color: 'warning.main' }} />
+              <Star sx={{ fontSize: 16, color: 'text.primary' }} />
               <Typography variant="body2" fontWeight="medium">
                 {route.averageRating.toFixed(1)}
               </Typography>

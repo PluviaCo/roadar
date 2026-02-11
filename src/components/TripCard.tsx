@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Card,
   CardContent,
@@ -20,7 +21,7 @@ interface TripCardProps {
 export function TripCard({ trip, showLikeButton, onLikeClick }: TripCardProps) {
   const tripDate = new Date(trip.date).toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
   })
 
@@ -38,27 +39,49 @@ export function TripCard({ trip, showLikeButton, onLikeClick }: TripCardProps) {
         />
       )}
       <CardContent>
-        <Stack spacing={1}>
-          {/* Title and Rating */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-            }}
-          >
+        <Stack spacing={2}>
+          {/* User info section */}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+            <Avatar
+              src={trip.user.pictureUrl || undefined}
+              alt={trip.user.name}
+              sx={{ width: 48, height: 48 }}
+            >
+              {trip.user.name.charAt(0).toUpperCase()}
+            </Avatar>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h6" gutterBottom>
-                {trip.title}
+              <Typography variant="subtitle1" fontWeight="medium">
+                {trip.user.name}
               </Typography>
-              {trip.rating && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Rating value={trip.rating} readOnly size="small" />
-                  <Typography variant="body2" color="text.secondary">
-                    {trip.rating.toFixed(1)}
-                  </Typography>
-                </Box>
-              )}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  flexWrap: 'wrap',
+                }}
+              >
+                {trip.rating && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Rating
+                      value={trip.rating}
+                      readOnly
+                      size="small"
+                      sx={{
+                        '& .MuiRating-iconFilled': {
+                          color: 'text.primary',
+                        },
+                        '& .MuiRating-iconHover': {
+                          color: 'text.secondary',
+                        },
+                      }}
+                    />
+                  </Box>
+                )}
+                <Typography variant="body2" color="text.secondary">
+                  {tripDate}
+                </Typography>
+              </Box>
             </Box>
             {showLikeButton && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -76,14 +99,12 @@ export function TripCard({ trip, showLikeButton, onLikeClick }: TripCardProps) {
             )}
           </Box>
 
-          {/* Date */}
-          <Typography variant="body2" color="text.secondary">
-            {tripDate}
-          </Typography>
+          {/* Title */}
+          <Typography variant="h6">{trip.title}</Typography>
 
           {/* Notes */}
           {trip.notes && (
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary">
               {trip.notes}
             </Typography>
           )}

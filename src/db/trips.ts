@@ -16,6 +16,10 @@ export interface Trip {
   isLiked?: boolean
   createdAt: string
   updatedAt: string
+  user: {
+    name: string
+    pictureUrl: string | null
+  }
 }
 
 export interface CreateTripInput {
@@ -154,6 +158,25 @@ async function enrichTrips(
   if (trips.length === 0) return []
 
   const tripIds = trips.map((t) => t.id)
+  const userIds = [...new Set(trips.map((t) => t.user_id))]
+
+  // Get user data for these trips
+  const users = await db
+    .selectFrom('users')
+    .select(['id', 'name', 'picture_url'])
+    .where('id', 'in', userIds)
+    .execute()
+
+  const userById = users.reduce(
+    (acc, user) => {
+      acc[user.id] = {
+        name: user.name,
+        pictureUrl: user.picture_url,
+      }
+      return acc
+    },
+    {} as Record<number, { name: string; pictureUrl: string | null }>,
+  )
 
   // Get all photos for these trips
   const photos = await db
@@ -214,5 +237,6 @@ async function enrichTrips(
     isLiked: userId ? likedTripIds.has(trip.id) : undefined,
     createdAt: new Date(trip.created_at).toISOString(),
     updatedAt: new Date(trip.updated_at).toISOString(),
+    user: userById[trip.user_id] || { name: 'Unknown User', pictureUrl: null },
   }))
 }

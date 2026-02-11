@@ -62,7 +62,7 @@ export function RouteCard({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
             {route.averageRating && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Star sx={{ fontSize: 18, color: 'warning.main' }} />
+                <Star sx={{ fontSize: 18, color: 'text.primary' }} />
                 <Typography variant="body2" fontWeight="medium">
                   {route.averageRating.toFixed(1)}
                 </Typography>

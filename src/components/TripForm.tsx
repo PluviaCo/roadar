@@ -106,6 +106,14 @@ export function TripForm({
               value={rating}
               onChange={(_, newValue) => setRating(newValue)}
               size="large"
+              sx={{
+                '& .MuiRating-iconFilled': {
+                  color: 'text.primary',
+                },
+                '& .MuiRating-iconHover': {
+                  color: 'text.secondary',
+                },
+              }}
             />
           </Box>
 
