@@ -3,12 +3,12 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  CardMedia,
   IconButton,
   Typography,
 } from '@mui/material'
 import { Favorite, FavoriteBorder, Star } from '@mui/icons-material'
 import { Link } from '@tanstack/react-router'
+import { PhotoCarousel } from './PhotoCarousel'
 import type { Route } from '@/db/routes'
 import { formatDistance, formatDuration } from '@/lib/route-utils'
 
@@ -25,6 +25,8 @@ export function RouteCard({
   showSaveButton,
   onSaveClick,
 }: RouteCardProps) {
+  const photos = route.photos.slice(0, 5) // Limit to 5 photos
+  const hasPhotos = photos.length > 0
   return (
     <Card sx={{ position: 'relative' }}>
       <CardActionArea
@@ -38,18 +40,7 @@ export function RouteCard({
           color: 'inherit',
         }}
       >
-        {route.photos.length > 0 && (
-          <CardMedia
-            component="img"
-            image={route.photos[0]}
-            alt={route.name}
-            sx={{
-              width: { xs: '100%', md: 300 },
-              height: { xs: 200, md: 'auto' },
-              objectFit: 'cover',
-            }}
-          />
-        )}
+        {hasPhotos && <PhotoCarousel photos={photos} alt={route.name} />}
         <CardContent sx={{ flex: 1 }}>
           <Typography variant="h5">{route.name}</Typography>
           {route.description && (
