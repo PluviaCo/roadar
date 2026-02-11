@@ -39,6 +39,7 @@ export function MapRouteCard({
         sx={{
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'start',
           textDecoration: 'none',
           color: 'inherit',
         }}
@@ -55,12 +56,11 @@ export function MapRouteCard({
             }}
           />
         )}
-        <CardContent sx={{ pb: 1 }}>
+        <CardContent sx={{ p: 1.5 }}>
           <Typography
             variant="subtitle1"
             sx={{
               fontWeight: 600,
-              mb: 0.5,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
