@@ -72,12 +72,8 @@ export function RouteCard({
               {route.distance != null && formatDistance(route.distance)}
               {route.duration != null && route.distance != null && ' • '}
               {route.duration != null && formatDuration(route.duration)}
-              {(route.distance != null || route.duration != null) && ' • '}
-              {route.coordinates.length} stops
               {route.tripCount > 0 &&
                 ` • ${route.tripCount} trip${route.tripCount !== 1 ? 's' : ''}`}
-              {route.photos.length > 0 &&
-                ` • ${route.photos.length} photo${route.photos.length !== 1 ? 's' : ''}`}
             </Typography>
           </Box>
         </CardContent>
