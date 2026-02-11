@@ -72,7 +72,7 @@ export function PhotoCarousel({ photos, alt }: PhotoCarouselProps) {
       onTouchEnd={handleTouchEnd}
       sx={{
         position: 'relative',
-        width: { xs: '100%', md: 300 },
+        width: { xs: '100%', md: 240 },
         height: { xs: 200, md: 'auto' },
       }}
     >
