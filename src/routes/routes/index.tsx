@@ -62,13 +62,42 @@ function RoutesListComponent() {
           </Link>
         )}
       </Box>
-      <Box sx={{ display: 'flex', gap: 2, flex: 1, overflow: 'hidden' }}>
-        {/* List on the left */}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          flex: 1,
+          overflow: 'hidden',
+          flexDirection: { xs: 'column', md: 'row' },
+        }}
+      >
+        {/* Map - above list on mobile, right on desktop */}
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: { xs: 300, md: 500 },
+            height: '100%',
+            borderRadius: 1,
+            overflow: 'hidden',
+            bgcolor: '#f5f5f5',
+            pointerEvents: 'auto',
+            order: { xs: -1, md: 1 },
+          }}
+        >
+          <RoutesMap
+            routes={routes}
+            savedRoutes={savedRoutes}
+            user={user}
+            onSaveClick={handleSaveClick}
+          />
+        </Box>
+        {/* List on the left (desktop) / below map (mobile) */}
         <Box
           sx={{
             flex: 1,
             overflowY: 'auto',
             pr: 1,
+            order: { xs: 0, md: 0 },
             '&::-webkit-scrollbar': {
               width: '8px',
             },
@@ -86,25 +115,6 @@ function RoutesListComponent() {
           }}
         >
           <RoutesList
-            routes={routes}
-            savedRoutes={savedRoutes}
-            user={user}
-            onSaveClick={handleSaveClick}
-          />
-        </Box>
-        {/* Map on the right */}
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 500,
-            height: '100%',
-            borderRadius: 1,
-            overflow: 'hidden',
-            bgcolor: '#f5f5f5',
-            pointerEvents: 'auto',
-          }}
-        >
-          <RoutesMap
             routes={routes}
             savedRoutes={savedRoutes}
             user={user}

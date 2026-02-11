@@ -10,8 +10,11 @@ interface PhotoCarouselProps {
 export function PhotoCarousel({ photos, alt }: PhotoCarouselProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [isHovering, setIsHovering] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   const hasMultiplePhotos = photos.length > 1
+  const minSwipeDistance = 50
 
   const handlePrevPhoto = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -30,10 +33,43 @@ export function PhotoCarousel({ photos, alt }: PhotoCarouselProps) {
     e.stopPropagation()
   }
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe) {
+      // Swiped left - show next photo
+      setCurrentPhotoIndex((prev) =>
+        prev === photos.length - 1 ? 0 : prev + 1,
+      )
+    }
+    if (isRightSwipe) {
+      // Swiped right - show previous photo
+      setCurrentPhotoIndex((prev) =>
+        prev === 0 ? photos.length - 1 : prev - 1,
+      )
+    }
+  }
+
   return (
     <Box
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       sx={{
         position: 'relative',
         width: { xs: '100%', md: 300 },
@@ -48,6 +84,7 @@ export function PhotoCarousel({ photos, alt }: PhotoCarouselProps) {
           height: '100%',
           objectFit: 'cover',
           display: 'block',
+          touchAction: 'none',
         }}
       />
       {hasMultiplePhotos && isHovering && (
