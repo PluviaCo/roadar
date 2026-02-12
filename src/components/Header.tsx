@@ -59,7 +59,6 @@ export function Header() {
             <StyledCustomLink to="/">
               <img src={Logo} alt="Roadar" width="24" height="24" />
             </StyledCustomLink>
-            <StyledCustomLink to="/routes">Routes</StyledCustomLink>
             {/* Search bar, only show if not on home page */}
             <Box sx={{ display: 'flex', flexGrow: 1, minWidth: 0, mx: 2 }}>
               {!isHome && (
@@ -93,6 +92,7 @@ export function Header() {
             >
               {user ? (
                 <>
+                  <StyledCustomLink to="/routes">Routes</StyledCustomLink>
                   <StyledCustomLink to="/saved">Saved</StyledCustomLink>
                   <StyledCustomLink to="/routes/my">My Routes</StyledCustomLink>
                   <IconButton
