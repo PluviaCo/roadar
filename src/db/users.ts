@@ -76,7 +76,7 @@ export async function getUser(db: D1Database, id: number) {
     .selectFrom('users')
     .where('id', '=', id)
     .selectAll()
-    .executeTakeFirstOrThrow()
+    .executeTakeFirst()
 
   return user
 }

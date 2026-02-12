@@ -1,11 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { redirect } from '@tanstack/react-router'
 import { env } from 'cloudflare:workers'
-import { getDb } from '@/db'
 import { getUser, updateUser } from '@/db/users'
 import { useAppSession } from '@/lib/session'
 
-export const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
+export const getCurrentUser = createServerFn({ method: 'GET' }).handler(async () => {
   const session = await useAppSession()
 
   if (!session.data.id) {
@@ -14,6 +13,12 @@ export const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
 
   const db = (env as any).DB
   const user = await getUser(db, session.data.id)
+
+  if (!user) {
+    // User no longer exists in database, clear the session
+    session.clear()
+    return null
+  }
 
   return {
     id: user.id,
@@ -36,7 +41,6 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
       throw new Error('Unauthorized')
     }
 
-    const db = getDb((env as any).DB)
     const bucket = (env as any).PHOTOS_BUCKET
 
     let pictureUrl: string | undefined

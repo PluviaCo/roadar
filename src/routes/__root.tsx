@@ -15,11 +15,11 @@ import { theme } from '@/setup/theme'
 import { Header } from '@/components/Header'
 import { SnackbarProvider } from '@/components/SnackbarProvider'
 import { Footer } from '@/components/Footer'
-import { fetchUser } from '@/server/users'
+import { getCurrentUser } from '@/server/users'
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
-    const user = await fetchUser()
+    const user = await getCurrentUser()
 
     return {
       user,
