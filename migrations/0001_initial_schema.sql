@@ -25,6 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_line_users_user_id ON line_users(user_id);
 -- Create prefectures table
 CREATE TABLE IF NOT EXISTS prefectures (
   id INTEGER PRIMARY KEY,
+  key TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL UNIQUE,
   region TEXT NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

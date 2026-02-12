@@ -6,6 +6,7 @@ export interface CreateRouteData {
   description?: string
   coordinates: Array<RouteCoordinate>
   isPublic?: boolean
+  prefectureId: number
 }
 
 export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
@@ -19,6 +20,42 @@ export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
     return await getAllRoutes(db, undefined)
   },
 )
+
+export const fetchPrefectures = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { env } = await import('cloudflare:workers')
+    const { getDb } = await import('@/db')
+    const { getAllPrefectures } = await import('@/db/prefectures')
+
+    const db = getDb((env as any).DB)
+
+    return await getAllPrefectures(db)
+  },
+)
+
+export const fetchRoutesByPrefecture = createServerFn({ method: 'GET' })
+  .inputValidator((data: { key: string }) => data)
+  .handler(async ({ data }) => {
+    const { env } = await import('cloudflare:workers')
+    const { getDb } = await import('@/db')
+    const { getAllPrefectures } = await import('@/db/prefectures')
+    const { getRoutesByPrefecture } = await import('@/db/routes')
+
+    const db = getDb((env as any).DB)
+
+    // Find prefecture by key
+    const prefectures = await getAllPrefectures(db)
+    const prefecture = prefectures.find((p) => p.key === data.key)
+
+    if (!prefecture) {
+      throw new Error('Prefecture not found')
+    }
+
+    return {
+      prefecture,
+      routes: await getRoutesByPrefecture(db, prefecture.id),
+    }
+  })
 
 export const fetchUserRoutes = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -98,6 +135,7 @@ export const createRoute = createServerFn({ method: 'POST' })
       isPublic: data.isPublic ?? true,
       distance,
       duration,
+      prefectureId: data.prefectureId,
     })
 
     return { routeId }

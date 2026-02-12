@@ -3,6 +3,7 @@ import type { DB } from './types'
 
 export interface Prefecture {
   id: number
+  key: string
   name: string
   region: string
 }
@@ -19,6 +20,7 @@ export async function getAllPrefectures(
 
   return prefectures.map((p) => ({
     id: p.id,
+    key: p.key,
     name: p.name,
     region: p.region,
   }))

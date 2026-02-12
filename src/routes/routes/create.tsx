@@ -6,8 +6,12 @@ import {
   Button,
   Chip,
   Container,
+  FormControl,
   FormControlLabel,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Switch,
   TextField,
@@ -15,21 +19,26 @@ import {
 } from '@mui/material'
 import type { RouteCoordinate } from '@/db/routes'
 import { createProtectedRoute } from '@/lib/protected-routes'
-import { createRoute } from '@/server/routes'
+import { createRoute, fetchPrefectures } from '@/server/routes'
 import { useSnackbar } from '@/components/SnackbarProvider'
 
 export const Route = createFileRoute('/routes/create')({
   ...createProtectedRoute(),
+  loader: async () => {
+    return { prefectures: await fetchPrefectures() }
+  },
   component: CreateRoute,
 })
 
 function CreateRoute() {
+  const { prefectures } = Route.useLoaderData()
   const router = useRouter()
   const { showSnack } = useSnackbar()
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [isPublic, setIsPublic] = useState(true)
+  const [prefectureId, setPrefectureId] = useState<number | ''>(13) // Default to Tokyo
   const [coordinates, setCoordinates] = useState<Array<RouteCoordinate>>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -61,12 +70,18 @@ function CreateRoute() {
         return
       }
 
+      if (!prefectureId) {
+        showSnack('Prefecture is required', 'error')
+        return
+      }
+
       const result = await createRoute({
         data: {
           name: name.trim(),
           description: description.trim() || undefined,
           coordinates,
           isPublic,
+          prefectureId: prefectureId as number,
         },
       })
 
@@ -112,6 +127,22 @@ function CreateRoute() {
               rows={3}
               placeholder="Describe your route, key features, or tips..."
             />
+
+            {/* Prefecture Selector */}
+            <FormControl fullWidth required>
+              <InputLabel>Prefecture</InputLabel>
+              <Select
+                value={prefectureId}
+                onChange={(e) => setPrefectureId(e.target.value as number)}
+                label="Prefecture"
+              >
+                {prefectures.map((prefecture) => (
+                  <MenuItem key={prefecture.id} value={prefecture.id}>
+                    {prefecture.name} ({prefecture.region})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             {/* Public/Private Toggle */}
             <FormControlLabel

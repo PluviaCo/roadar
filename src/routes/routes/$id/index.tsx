@@ -1,14 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import {
   Box,
   Button,
+  Chip,
   IconButton,
   Rating,
-  Snackbar,
   Stack,
   Typography,
 } from '@mui/material'
 import {
+  Add as AddIcon,
+  ArrowBack,
   DriveEta,
   Favorite,
   FavoriteBorder,
@@ -24,23 +26,40 @@ import { TripForm } from '@/components/TripForm'
 import { TripCard } from '@/components/TripCard'
 import { CustomButtonLink } from '@/components/CustomButtonLink'
 import { toggleSavedRoute } from '@/server/saved-routes'
-import { fetchRoute, updateRoutePrivacy } from '@/server/routes'
+import {
+  fetchRoute,
+  fetchRoutesByPrefecture,
+  updateRoutePrivacy,
+} from '@/server/routes'
 import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
 import { formatDistance, formatDuration } from '@/lib/route-utils'
 import { useSnackbar } from '@/components/SnackbarProvider'
+import { RoutesListMapView } from '@/components/RoutesListMapView'
 
 export const Route = createFileRoute('/routes/$id/')({
   loader: async ({ params }) => {
-    const [route, trips] = await Promise.all([
-      fetchRoute({ data: { id: params.id } }),
-      fetchTripsByRoute({ data: { routeId: params.id } }),
-    ])
-    if (!route) {
-      throw new Error(`Route not found: ${params.id}`)
+    // Check if ID is a number (route ID) or string (prefecture key)
+    const isNumeric = /^\d+$/.test(params.id)
+
+    if (isNumeric) {
+      // Load individual route
+      const [route, trips] = await Promise.all([
+        fetchRoute({ data: { id: params.id } }),
+        fetchTripsByRoute({ data: { routeId: params.id } }),
+      ])
+      if (!route) {
+        throw new Error(`Route not found: ${params.id}`)
+      }
+      return { type: 'route' as const, route, trips }
+    } else {
+      // Load prefecture routes
+      const { prefecture, routes } = await fetchRoutesByPrefecture({
+        data: { key: params.id },
+      })
+      return { type: 'prefecture' as const, prefecture, routes }
     }
-    return { route, trips }
   },
-  component: RouteDetailComponent,
+  component: RouteOrPrefectureComponent,
   errorComponent: ({ error }) => (
     <Stack padding={2}>
       <Typography color="error">Error: {error.message}</Typography>
@@ -48,9 +67,74 @@ export const Route = createFileRoute('/routes/$id/')({
   ),
 })
 
-function RouteDetailComponent() {
+function RouteOrPrefectureComponent() {
+  const data = Route.useLoaderData()
+
+  if (data.type === 'prefecture') {
+    return (
+      <PrefectureRoutesComponent
+        prefecture={data.prefecture}
+        routes={data.routes}
+      />
+    )
+  }
+
+  return <RouteDetailComponent route={data.route} trips={data.trips} />
+}
+
+// Prefecture Routes Component (list view like /routes)
+function PrefectureRoutesComponent({
+  prefecture,
+  routes,
+}: {
+  prefecture: any
+  routes: Array<any>
+}) {
+  const { user } = Route.useRouteContext()
+
+  return (
+    <Stack spacing={2} padding={2} sx={{ height: '100vh' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Link to="/">
+            <Button startIcon={<ArrowBack />} variant="outlined">
+              Home
+            </Button>
+          </Link>
+          <Box>
+            <Typography variant="h1">{prefecture.name}</Typography>
+            <Chip label={prefecture.region} size="small" sx={{ mt: 0.5 }} />
+          </Box>
+        </Box>
+        {user && (
+          <Link to="/routes/create">
+            <Button variant="contained" startIcon={<AddIcon />}>
+              Create Route
+            </Button>
+          </Link>
+        )}
+      </Box>
+      <RoutesListMapView routes={routes} user={user} />
+    </Stack>
+  )
+}
+
+// Individual Route Detail Component
+function RouteDetailComponent({
+  route: initialRoute,
+  trips: initialTrips,
+}: {
+  route: any
+  trips: Array<any>
+}) {
   const photosDisplayCount = 4
-  const { route: initialRoute, trips: initialTrips } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
   const { showSnack } = useSnackbar()
   const [route, setRoute] = useState(initialRoute)
@@ -194,10 +278,10 @@ function RouteDetailComponent() {
     route.coordinates.length > 0
       ? {
           lat:
-            route.coordinates.reduce((sum, c) => sum + c.lat, 0) /
+            route.coordinates.reduce((sum: number, c: any) => sum + c.lat, 0) /
             route.coordinates.length,
           lng:
-            route.coordinates.reduce((sum, c) => sum + c.lng, 0) /
+            route.coordinates.reduce((sum: number, c: any) => sum + c.lng, 0) /
             route.coordinates.length,
         }
       : { lat: 35.6762, lng: 139.6503 }
@@ -273,18 +357,20 @@ function RouteDetailComponent() {
               marginBottom: '16px',
             }}
           >
-            {route.photos.slice(0, photosDisplayCount).map((photo, index) => (
-              <img
-                key={index}
-                src={photo}
-                alt={`Route photo ${index + 1}`}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '8px',
-                }}
-              />
-            ))}
+            {route.photos
+              .slice(0, photosDisplayCount)
+              .map((photo: string, index: number) => (
+                <img
+                  key={index}
+                  src={photo}
+                  alt={`Route photo ${index + 1}`}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    borderRadius: '8px',
+                  }}
+                />
+              ))}
           </div>
           <CustomButtonLink
             variant="outlined"

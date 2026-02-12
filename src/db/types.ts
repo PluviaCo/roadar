@@ -21,6 +21,7 @@ export interface LineUsersTable {
 
 export interface PrefecturesTable {
   id: number
+  key: string
   name: string
   region: string
   created_at: ColumnType<Date, Date | string | undefined, never>

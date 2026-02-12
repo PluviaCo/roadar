@@ -1,22 +1,25 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material'
 import { ArrowForward } from '@mui/icons-material'
 import { useState } from 'react'
 import { toggleSavedRoute } from '@/server/saved-routes'
-import { fetchRoutes } from '@/server/routes'
+import { fetchPrefectures, fetchRoutes } from '@/server/routes'
 import { RouteCard } from '@/components/RouteCard'
 import { RouteSearchBar } from '@/components/RouteSearchBar'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
-    const routes = await fetchRoutes()
-    return routes
+    const [routes, prefectures] = await Promise.all([
+      fetchRoutes(),
+      fetchPrefectures(),
+    ])
+    return { routes, prefectures }
   },
   component: HomeComponent,
 })
 
 function HomeComponent() {
-  const routes = Route.useLoaderData()
+  const { routes, prefectures } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
   const navigate = useNavigate()
   // const [searchQuery, setSearchQuery] = useState('')
@@ -46,6 +49,22 @@ function HomeComponent() {
 
   // Always show only the first 6 recent routes
   const recentRoutes = routes.slice(0, 6)
+
+  // Group prefectures by region
+  const prefecturesByRegion = prefectures.reduce(
+    (acc: Record<string, typeof prefectures>, prefecture: any) => {
+      const region = prefecture.region
+      if (!acc[region]) {
+        acc[region] = []
+      }
+      acc[region].push(prefecture)
+      return acc
+    },
+    {},
+  )
+
+  // Sort regions for consistent display
+  const sortedRegions = Object.keys(prefecturesByRegion).sort()
 
   return (
     <Stack spacing={6}>
@@ -97,6 +116,51 @@ function HomeComponent() {
           </Button>
         </Container>
       </Box>
+
+      {/* Prefectures Section */}
+      <Container>
+        <Typography variant="h4" gutterBottom fontWeight="bold">
+          Browse by Prefecture
+        </Typography>
+        <Stack spacing={3} sx={{ mt: 3 }}>
+          {sortedRegions.map((region) => (
+            <Box key={region}>
+              <Typography
+                variant="h6"
+                sx={{ mb: 1.5, color: 'text.secondary' }}
+              >
+                {region}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 1,
+                }}
+              >
+                {prefecturesByRegion[region].map((prefecture: any) => (
+                  <Link
+                    key={prefecture.id}
+                    to="/routes/$id"
+                    params={{ id: prefecture.key }}
+                  >
+                    <Chip
+                      label={prefecture.name}
+                      clickable
+                      sx={{
+                        '&:hover': {
+                          bgcolor: 'primary.light',
+                          color: 'primary.contrastText',
+                        },
+                      }}
+                    />
+                  </Link>
+                ))}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
+      </Container>
 
       {/* Routes Section */}
       <Container>
