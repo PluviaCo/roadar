@@ -1,7 +1,27 @@
 import { createServerFn } from '@tanstack/react-start'
+import { redirect } from '@tanstack/react-router'
 import { env } from 'cloudflare:workers'
-import { updateUser } from '@/db/users'
+import { getDb } from '@/db'
+import { getUser, updateUser } from '@/db/users'
 import { useAppSession } from '@/lib/session'
+
+export const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
+  const session = await useAppSession()
+
+  if (!session.data.id) {
+    return null
+  }
+
+  const db = (env as any).DB
+  const user = await getUser(db, session.data.id)
+
+  return {
+    id: user.id,
+    email: user.email || undefined,
+    name: user.name,
+    picture_url: user.picture_url || undefined,
+  }
+})
 
 export interface UpdateProfileData {
   name?: string
@@ -16,7 +36,7 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
       throw new Error('Unauthorized')
     }
 
-    const db = env.DB
+    const db = getDb((env as any).DB)
     const bucket = (env as any).PHOTOS_BUCKET
 
     let pictureUrl: string | undefined
@@ -36,10 +56,19 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
       pictureUrl = `/photos/${photoKey}`
     }
 
-    const updatedUser = await updateUser(db, session.data.id, {
+    const updatedUser = await updateUser((env as any).DB, session.data.id, {
       ...(data.name !== undefined && { name: data.name }),
       ...(pictureUrl && { picture_url: pictureUrl }),
     })
 
     return updatedUser
   })
+
+export const logout = createServerFn().handler(async () => {
+  const session = await useAppSession()
+  session.clear()
+
+  throw redirect({
+    href: '/',
+  })
+})

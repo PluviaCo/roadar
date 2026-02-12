@@ -11,33 +11,11 @@ import { Container, CssBaseline, ThemeProvider } from '@mui/material'
 import createCache from '@emotion/cache'
 import fontsourceVariableRobotoCss from '@fontsource-variable/roboto?url'
 import React from 'react'
-import { createServerFn } from '@tanstack/react-start'
 import { theme } from '@/setup/theme'
 import { Header } from '@/components/Header'
 import { SnackbarProvider } from '@/components/SnackbarProvider'
-import { useAppSession } from '@/lib/session'
 import { Footer } from '@/components/Footer'
-
-const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
-  const session = await useAppSession()
-
-  if (!session.data.id) {
-    return null
-  }
-
-  const { getUser } = await import('@/db/users')
-  const { env } = await import('cloudflare:workers')
-
-  const db = (env as any).DB
-  const user = await getUser(db, session.data.id)
-
-  return {
-    id: user.id,
-    email: user.email || undefined,
-    name: user.name,
-    picture_url: user.picture_url || undefined,
-  }
-})
+import { fetchUser } from '@/server/users'
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
