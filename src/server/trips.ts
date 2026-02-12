@@ -1,4 +1,14 @@
 import { createServerFn } from '@tanstack/react-start'
+import { env } from 'cloudflare:workers'
+import { getDb } from '@/db'
+import {
+  createTrip as dbCreateTrip,
+  toggleTripLike as dbToggleTripLike,
+  getTripById,
+  getTripsByRouteId,
+  getTripsByUserId,
+} from '@/db/trips'
+import { useAppSession } from '@/lib/session'
 
 export interface CreateTripData {
   routeId: string | null
@@ -13,11 +23,6 @@ export interface CreateTripData {
 export const createTrip = createServerFn({ method: 'POST' })
   .inputValidator((data: CreateTripData) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { createTrip: dbCreateTrip } = await import('@/db/trips')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')
@@ -74,11 +79,6 @@ export const createTrip = createServerFn({ method: 'POST' })
 export const fetchTripsByRoute = createServerFn({ method: 'GET' })
   .inputValidator((data: { routeId: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getTripsByRouteId } = await import('@/db/trips')
-    const { useAppSession } = await import('@/lib/session')
-
     const db = getDb((env as any).DB)
     const session = await useAppSession()
     const userId = session.data.id || undefined
@@ -89,11 +89,6 @@ export const fetchTripsByRoute = createServerFn({ method: 'GET' })
 export const fetchTripsByUser = createServerFn({ method: 'GET' })
   .inputValidator((data: { userId: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getTripsByUserId } = await import('@/db/trips')
-    const { useAppSession } = await import('@/lib/session')
-
     const db = getDb((env as any).DB)
     const session = await useAppSession()
     const viewerUserId = session.data.id || undefined
@@ -104,11 +99,6 @@ export const fetchTripsByUser = createServerFn({ method: 'GET' })
 export const fetchTrip = createServerFn({ method: 'GET' })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getTripById } = await import('@/db/trips')
-    const { useAppSession } = await import('@/lib/session')
-
     const db = getDb((env as any).DB)
     const session = await useAppSession()
     const userId = session.data.id || undefined
@@ -119,11 +109,6 @@ export const fetchTrip = createServerFn({ method: 'GET' })
 export const toggleTripLike = createServerFn({ method: 'POST' })
   .inputValidator((data: { tripId: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { toggleTripLike: dbToggleTripLike } = await import('@/db/trips')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')

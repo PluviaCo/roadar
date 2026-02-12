@@ -1,4 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
+import { env } from 'cloudflare:workers'
+import { getDb } from '@/db'
+import { useAppSession } from '@/lib/session'
 
 export const uploadPhoto = createServerFn({ method: 'POST' })
   .inputValidator(
@@ -10,10 +13,6 @@ export const uploadPhoto = createServerFn({ method: 'POST' })
     }) => data,
   )
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { useAppSession } = await import('@/lib/session')
-
     // Check authentication
     const session = await useAppSession()
     if (!session.data.id) {

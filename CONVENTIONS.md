@@ -54,11 +54,6 @@ export async function toggleSaved(
 export const toggleSavedRoute = createServerFn({ method: 'POST' })
   .inputValidator((data: { routeId: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { toggleSaved } = await import('@/db/saved-routes')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')
@@ -198,14 +193,6 @@ const session = await useAppSession()
 if (!session.data.id) {
   throw new Error('Unauthorized')
 }
-```
-
-### Dynamic Imports
-
-```typescript
-const { env } = await import('cloudflare:workers')
-const { getDb } = await import('@/db')
-const { functionName } = await import('@/db/module')
 ```
 
 ### File Upload Serialization

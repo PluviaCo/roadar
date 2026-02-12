@@ -1,13 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
+import { env } from 'cloudflare:workers'
+import { getDb } from '@/db'
+import { toggleSaved, getSavedRoutes } from '@/db/saved-routes'
+import { useAppSession } from '@/lib/session'
 
 export const toggleSavedRoute = createServerFn({ method: 'POST' })
   .inputValidator((data: { routeId: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { toggleSaved } = await import('@/db/saved-routes')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')
@@ -23,11 +22,6 @@ export const toggleSavedRoute = createServerFn({ method: 'POST' })
 
 export const fetchSavedRoutes = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getSavedRoutes } = await import('@/db/saved-routes')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')

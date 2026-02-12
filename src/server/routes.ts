@@ -1,5 +1,18 @@
 import { createServerFn } from '@tanstack/react-start'
+import { env } from 'cloudflare:workers'
 import type { RouteCoordinate } from '@/db/routes'
+import {
+  createUserRoute,
+  getAllRoutes,
+  getRouteById,
+  getRoutesByPrefecture,
+  getUserRoutes,
+  updateRoutePrivacy as updateRoutePrivacyDb,
+} from '@/db/routes'
+import { getAllPrefectures } from '@/db/prefectures'
+import { useAppSession } from '@/lib/session'
+import { calculateRouteMetrics } from '@/lib/route-utils'
+import { getDb } from '@/db'
 
 export interface CreateRouteData {
   name: string
@@ -11,10 +24,6 @@ export interface CreateRouteData {
 
 export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getAllRoutes } = await import('@/db/routes')
-
     const db = getDb((env as any).DB)
 
     return await getAllRoutes(db, undefined)
@@ -23,10 +32,6 @@ export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
 
 export const fetchPrefectures = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getAllPrefectures } = await import('@/db/prefectures')
-
     const db = getDb((env as any).DB)
 
     return await getAllPrefectures(db)
@@ -36,11 +41,6 @@ export const fetchPrefectures = createServerFn({ method: 'GET' }).handler(
 export const fetchRoutesByPrefecture = createServerFn({ method: 'GET' })
   .inputValidator((data: { key: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getAllPrefectures } = await import('@/db/prefectures')
-    const { getRoutesByPrefecture } = await import('@/db/routes')
-
     const db = getDb((env as any).DB)
 
     // Find prefecture by key
@@ -59,11 +59,6 @@ export const fetchRoutesByPrefecture = createServerFn({ method: 'GET' })
 
 export const fetchUserRoutes = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getUserRoutes } = await import('@/db/routes')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
 
     if (!session.data.id) {
@@ -80,11 +75,6 @@ export const fetchUserRoutes = createServerFn({ method: 'GET' }).handler(
 export const fetchRoute = createServerFn({ method: 'GET' })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { getRouteById } = await import('@/db/routes')
-    const { useAppSession } = await import('@/lib/session')
-
     const db = getDb((env as any).DB)
     const session = await useAppSession()
     const userId = session.data.id || undefined
@@ -95,12 +85,6 @@ export const fetchRoute = createServerFn({ method: 'GET' })
 export const createRoute = createServerFn({ method: 'POST' })
   .inputValidator((data: CreateRouteData) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { createUserRoute } = await import('@/db/routes')
-    const { useAppSession } = await import('@/lib/session')
-    const { calculateRouteMetrics } = await import('@/lib/route-utils')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')
@@ -144,12 +128,6 @@ export const createRoute = createServerFn({ method: 'POST' })
 export const updateRoutePrivacy = createServerFn({ method: 'POST' })
   .inputValidator((data: { routeId: string; isPublic: boolean }) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { getDb } = await import('@/db')
-    const { updateRoutePrivacy: updateRoutePrivacyDb } =
-      await import('@/db/routes')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')

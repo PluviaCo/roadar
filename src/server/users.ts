@@ -1,4 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
+import { env } from 'cloudflare:workers'
+import { updateUser } from '@/db/users'
+import { useAppSession } from '@/lib/session'
 
 export interface UpdateProfileData {
   name?: string
@@ -8,10 +11,6 @@ export interface UpdateProfileData {
 export const updateUserProfile = createServerFn({ method: 'POST' })
   .inputValidator((data: UpdateProfileData) => data)
   .handler(async ({ data }) => {
-    const { env } = await import('cloudflare:workers')
-    const { updateUser } = await import('@/db/users')
-    const { useAppSession } = await import('@/lib/session')
-
     const session = await useAppSession()
     if (!session.data.id) {
       throw new Error('Unauthorized')
