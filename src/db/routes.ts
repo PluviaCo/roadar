@@ -19,6 +19,7 @@ export interface Route {
   isSaved?: boolean
   userId?: number | null
   isPublic?: boolean
+  prefectureId: number
 }
 
 // Database functions
@@ -27,6 +28,7 @@ export async function createRoute(
   name: string,
   coordinates: Array<RouteCoordinate>,
   photoUrls: Array<string>,
+  prefectureId: number,
   distance?: number | null,
   duration?: number | null,
 ): Promise<number> {
@@ -39,6 +41,7 @@ export async function createRoute(
       is_public: true,
       distance: distance ?? null,
       duration: duration ?? null,
+      prefecture_id: prefectureId,
     })
     .executeTakeFirstOrThrow()
 
@@ -71,6 +74,7 @@ export async function createUserRoute(
     isPublic?: boolean
     distance?: number | null
     duration?: number | null
+    prefectureId: number
   },
 ): Promise<number> {
   const result = await db
@@ -83,6 +87,7 @@ export async function createUserRoute(
       is_public: data.isPublic ?? true,
       distance: data.distance ?? null,
       duration: data.duration ?? null,
+      prefecture_id: data.prefectureId,
     })
     .executeTakeFirstOrThrow()
 
@@ -92,6 +97,7 @@ export async function createUserRoute(
 export async function getAllRoutes(
   db: Kysely<DB>,
   userId?: number,
+  prefectureId?: number,
 ): Promise<Array<Route>> {
   // Get routes that are either public OR owned by the user
   let query = db.selectFrom('routes').selectAll().orderBy('created_at', 'desc')
@@ -104,6 +110,11 @@ export async function getAllRoutes(
   } else {
     // Show only public routes for non-authenticated users
     query = query.where('is_public', '=', true)
+  }
+
+  // Filter by prefecture if specified
+  if (prefectureId) {
+    query = query.where('prefecture_id', '=', prefectureId)
   }
 
   const routes = await query.execute()
@@ -168,11 +179,21 @@ export async function getAllRoutes(
         isSaved: userId ? savedIds.has(route.id) : undefined,
         userId: route.user_id,
         isPublic: route.is_public,
+        prefectureId: route.prefecture_id,
       }
     }),
   )
 
   return routesWithPhotos
+}
+
+// Get routes by prefecture
+export async function getRoutesByPrefecture(
+  db: Kysely<DB>,
+  prefectureId: number,
+  userId?: number,
+): Promise<Array<Route>> {
+  return getAllRoutes(db, userId, prefectureId)
 }
 
 // Get routes created by a specific user
@@ -244,6 +265,7 @@ export async function getUserRoutes(
         isSaved: savedIds.has(route.id),
         userId: route.user_id,
         isPublic: route.is_public,
+        prefectureId: route.prefecture_id,
       }
     }),
   )
@@ -338,6 +360,7 @@ export async function getRouteById(
     isSaved,
     userId: route.user_id,
     isPublic: route.is_public,
+    prefectureId: route.prefecture_id,
   }
 }
 

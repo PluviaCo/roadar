@@ -19,6 +19,13 @@ export interface LineUsersTable {
   created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
+export interface PrefecturesTable {
+  id: number
+  name: string
+  region: string
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
 export interface RoutesTable {
   id: Generated<number>
   name: string
@@ -28,6 +35,7 @@ export interface RoutesTable {
   is_public: boolean
   distance: number | null // Distance in meters from Google Maps API
   duration: number | null // Duration in seconds from Google Maps API
+  prefecture_id: number
   updated_at: ColumnType<Date, Date | string | undefined, never>
   created_at: ColumnType<Date, Date | string | undefined, never>
 }
@@ -79,6 +87,7 @@ export interface DB {
   users: UsersTable
   line_users: LineUsersTable
   routes: RoutesTable
+  prefectures: PrefecturesTable
   photos: PhotosTable
   saved_routes: SavedRoutesTable
   trips: TripsTable

@@ -18,6 +18,7 @@ const mockRoutes = [
     ],
     duration: 900, // 15 min in seconds
     distance: 3200, // 3.2 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Airport Express',
@@ -35,6 +36,7 @@ const mockRoutes = [
     ],
     duration: 1320, // 22 min in seconds
     distance: 5500, // 5.5 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Waterfront Route',
@@ -53,6 +55,7 @@ const mockRoutes = [
     ],
     duration: 1740, // 29 min in seconds
     distance: 8000, // 8.0 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Suburban Connector',
@@ -70,6 +73,7 @@ const mockRoutes = [
     ],
     duration: 2160, // 36 min in seconds
     distance: 10500, // 10.5 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Shopping District',
@@ -88,6 +92,7 @@ const mockRoutes = [
     ],
     duration: 2580, // 43 min in seconds
     distance: 13000, // 13.0 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'University Shuttle',
@@ -102,6 +107,7 @@ const mockRoutes = [
     photos: ['https://placehold.co/600x400?text=Photo+1'],
     duration: 3000, // 50 min in seconds
     distance: 15500, // 15.5 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Business Park Loop',
@@ -120,6 +126,7 @@ const mockRoutes = [
     ],
     duration: 3420, // 57 min in seconds
     distance: 18000, // 18.0 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Harbor Transit',
@@ -140,6 +147,7 @@ const mockRoutes = [
     ],
     duration: 3840, // 64 min in seconds
     distance: 20500, // 20.5 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Historic District Tour',
@@ -158,6 +166,7 @@ const mockRoutes = [
     ],
     duration: 4260, // 71 min in seconds
     distance: 23000, // 23.0 km in meters
+    prefectureId: 13, // Tokyo
   },
   {
     name: 'Park Circuit',
@@ -176,6 +185,155 @@ const mockRoutes = [
     ],
     duration: 4680, // 78 min in seconds
     distance: 25500, // 25.5 km in meters
+    prefectureId: 13, // Tokyo
+  },
+  // Fukuoka routes
+  {
+    name: 'Hakata Bay Coastal',
+    description:
+      'Scenic coastal route along Hakata Bay with views of the city skyline.',
+    coordinates: [
+      { lat: 33.59, lng: 130.4 },
+      { lat: 33.595, lng: 130.405 },
+      { lat: 33.6, lng: 130.41 },
+      { lat: 33.605, lng: 130.415 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+    ],
+    duration: 1500,
+    distance: 6000,
+    prefectureId: 40, // Fukuoka
+  },
+  {
+    name: 'Dazaifu Temple Path',
+    description:
+      'Historic route connecting temples and shrines in the Dazaifu area.',
+    coordinates: [
+      { lat: 33.515, lng: 130.52 },
+      { lat: 33.52, lng: 130.525 },
+      { lat: 33.525, lng: 130.53 },
+      { lat: 33.53, lng: 130.535 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
+    duration: 2100,
+    distance: 8500,
+    prefectureId: 40, // Fukuoka
+  },
+  // Hokkaido routes
+  {
+    name: 'Sapporo City Loop',
+    description: 'Central Sapporo route through parks and shopping districts.',
+    coordinates: [
+      { lat: 43.06, lng: 141.35 },
+      { lat: 43.065, lng: 141.355 },
+      { lat: 43.07, lng: 141.36 },
+      { lat: 43.075, lng: 141.365 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+    ],
+    duration: 1800,
+    distance: 7200,
+    prefectureId: 1, // Hokkaido
+  },
+  {
+    name: 'Odori Park Circuit',
+    description:
+      'Beautiful route through Odori Park and surrounding entertainment district.',
+    coordinates: [
+      { lat: 43.055, lng: 141.34 },
+      { lat: 43.06, lng: 141.345 },
+      { lat: 43.065, lng: 141.35 },
+      { lat: 43.07, lng: 141.355 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
+    duration: 2400,
+    distance: 9500,
+    prefectureId: 1, // Hokkaido
+  },
+  {
+    name: 'Maruyama Forest Trail',
+    description: 'Nature route through Maruyama forest and shrine area.',
+    coordinates: [
+      { lat: 43.04, lng: 141.31 },
+      { lat: 43.045, lng: 141.315 },
+      { lat: 43.05, lng: 141.32 },
+      { lat: 43.055, lng: 141.325 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+    ],
+    duration: 3200,
+    distance: 12000,
+    prefectureId: 1, // Hokkaido
+  },
+  // Okinawa routes
+  {
+    name: 'Naha Waterfront',
+    description: "Tropical coastal route along Naha's beautiful waterfront.",
+    coordinates: [
+      { lat: 26.21, lng: 127.68 },
+      { lat: 26.215, lng: 127.685 },
+      { lat: 26.22, lng: 127.69 },
+      { lat: 26.225, lng: 127.695 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
+    duration: 1600,
+    distance: 6500,
+    prefectureId: 47, // Okinawa
+  },
+  {
+    name: 'Shuri Castle Path',
+    description:
+      'Historic route through Shuri Castle area and traditional neighborhoods.',
+    coordinates: [
+      { lat: 26.215, lng: 127.715 },
+      { lat: 26.22, lng: 127.72 },
+      { lat: 26.225, lng: 127.725 },
+      { lat: 26.23, lng: 127.73 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+    ],
+    duration: 2000,
+    distance: 7800,
+    prefectureId: 47, // Okinawa
+  },
+  {
+    name: 'Kokusai Street',
+    description:
+      "Vibrant route through Okinawa's famous shopping and entertainment street.",
+    coordinates: [
+      { lat: 26.216, lng: 127.676 },
+      { lat: 26.22, lng: 127.68 },
+      { lat: 26.224, lng: 127.684 },
+      { lat: 26.228, lng: 127.688 },
+    ],
+    photos: [
+      'https://placehold.co/600x400?text=Photo+1',
+      'https://placehold.co/600x400?text=Photo+2',
+      'https://placehold.co/600x400?text=Photo+3',
+    ],
+    duration: 1400,
+    distance: 5500,
+    prefectureId: 47, // Okinawa
   },
 ]
 
@@ -202,7 +360,7 @@ for (const route of mockRoutes) {
     : null
 
   sqlStatements.push(
-    `INSERT INTO routes (id, name, description, coordinates, duration, distance, updated_at, created_at) VALUES (${routeId}, '${name}', ${description ? `'${description}'` : 'NULL'}, '${coordsJson}', ${route.duration}, ${route.distance}, datetime('now'), datetime('now'));`,
+    `INSERT INTO routes (id, name, description, coordinates, duration, distance, prefecture_id, updated_at, created_at) VALUES (${routeId}, '${name}', ${description ? `'${description}'` : 'NULL'}, '${coordsJson}', ${route.duration}, ${route.distance}, ${route.prefectureId}, datetime('now'), datetime('now'));`,
   )
 
   for (const photoUrl of route.photos) {
@@ -226,7 +384,9 @@ try {
   execSync(`npx wrangler d1 execute roadar-db --local --file=${tmpFile}`, {
     stdio: 'inherit',
   })
-  console.log(`✓ Successfully seeded ${mockRoutes.length} routes`)
+  console.log(
+    `✓ Successfully seeded ${mockRoutes.length} routes across multiple prefectures`,
+  )
 } finally {
   unlinkSync(tmpFile)
 }

@@ -22,6 +22,14 @@ CREATE TABLE IF NOT EXISTS line_users (
 CREATE INDEX IF NOT EXISTS idx_line_users_line_user_id ON line_users(line_user_id);
 CREATE INDEX IF NOT EXISTS idx_line_users_user_id ON line_users(user_id);
 
+-- Create prefectures table
+CREATE TABLE IF NOT EXISTS prefectures (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  region TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create routes table
 CREATE TABLE IF NOT EXISTS routes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,14 +40,17 @@ CREATE TABLE IF NOT EXISTS routes (
   is_public BOOLEAN DEFAULT TRUE, -- Whether route is publicly visible
   distance INTEGER, -- Distance in meters from Google Maps API
   duration INTEGER, -- Duration in seconds from Google Maps API
+  prefecture_id INTEGER NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (prefecture_id) REFERENCES prefectures(id)
 );
 
 -- Create index for routes user_id
 CREATE INDEX IF NOT EXISTS idx_routes_user_id ON routes(user_id);
 CREATE INDEX IF NOT EXISTS idx_routes_public ON routes(is_public);
+CREATE INDEX IF NOT EXISTS idx_routes_prefecture_id ON routes(prefecture_id);
 
 -- Create photos table
 CREATE TABLE IF NOT EXISTS photos (
