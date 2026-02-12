@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material'
 import { ArrowForward } from '@mui/icons-material'
 import { useState } from 'react'
@@ -63,8 +63,21 @@ function HomeComponent() {
     {},
   )
 
-  // Sort regions for consistent display
-  const sortedRegions = Object.keys(prefecturesByRegion).sort()
+  // Define region order (reversed)
+  const regionOrder = [
+    '九州',
+    '四国',
+    '中国',
+    '近畿',
+    '中部',
+    '関東',
+    '東北',
+    '北海道',
+  ]
+
+  const orderedRegions = regionOrder.filter((region) =>
+    prefecturesByRegion.hasOwnProperty(region),
+  )
 
   return (
     <Stack spacing={6}>
@@ -122,22 +135,29 @@ function HomeComponent() {
         <Typography variant="h4" gutterBottom fontWeight="bold">
           Browse by Prefecture
         </Typography>
-        <Stack spacing={3} sx={{ mt: 3 }}>
-          {sortedRegions.map((region) => (
-            <Box key={region}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 3,
+            mt: 3,
+            overflowX: 'auto',
+            pb: 2,
+          }}
+        >
+          {orderedRegions.map((region) => (
+            <Box
+              key={region}
+              sx={{
+                flex: '0 0 auto',
+              }}
+            >
               <Typography
                 variant="h6"
-                sx={{ mb: 1.5, color: 'text.secondary' }}
+                sx={{ mb: 1.5, color: 'text.secondary', fontWeight: 'bold' }}
               >
                 {region}
               </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 1,
-                }}
-              >
+              <Stack spacing={1}>
                 {prefecturesByRegion[region].map((prefecture: any) => (
                   <Link
                     key={prefecture.id}
@@ -147,7 +167,9 @@ function HomeComponent() {
                     <Chip
                       label={prefecture.name}
                       clickable
+                      size="small"
                       sx={{
+                        justifyContent: 'flex-start',
                         '&:hover': {
                           bgcolor: 'primary.light',
                           color: 'primary.contrastText',
@@ -156,10 +178,10 @@ function HomeComponent() {
                     />
                   </Link>
                 ))}
-              </Box>
+              </Stack>
             </Box>
           ))}
-        </Stack>
+        </Box>
       </Container>
 
       {/* Routes Section */}

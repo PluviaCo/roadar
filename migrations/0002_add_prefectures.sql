@@ -34,15 +34,15 @@ INSERT INTO prefectures (id, key, name, region) VALUES
   (22, 'shizuoka', '静岡県', '中部'),
   (23, 'aichi', '愛知県', '中部');
 
--- Kansai Region (関西地方)
+-- Kansai Region (近畿地方)
 INSERT INTO prefectures (id, key, name, region) VALUES
-  (24, 'mie', '三重県', '関西'),
-  (25, 'shiga', '滋賀県', '関西'),
-  (26, 'kyoto', '京都府', '関西'),
-  (27, 'osaka', '大阪府', '関西'),
-  (28, 'hyogo', '兵庫県', '関西'),
-  (29, 'nara', '奈良県', '関西'),
-  (30, 'wakayama', '和歌山県', '関西');
+  (24, 'mie', '三重県', '近畿'),
+  (25, 'shiga', '滋賀県', '近畿'),
+  (26, 'kyoto', '京都府', '近畿'),
+  (27, 'osaka', '大阪府', '近畿'),
+  (28, 'hyogo', '兵庫県', '近畿'),
+  (29, 'nara', '奈良県', '近畿'),
+  (30, 'wakayama', '和歌山県', '近畿');
 
 -- Chugoku Region (中国地方)
 INSERT INTO prefectures (id, key, name, region) VALUES
