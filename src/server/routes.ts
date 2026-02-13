@@ -6,10 +6,12 @@ import {
   getAllRoutes,
   getRouteById,
   getRoutesByPrefecture,
+  getRoutesByRegion,
   getUserRoutes,
   updateRoutePrivacy as updateRoutePrivacyDb,
 } from '@/db/routes'
 import { getAllPrefectures } from '@/db/prefectures'
+import { getAllRegions, getRegionByKey } from '@/db/regions'
 import { useAppSession } from '@/lib/session'
 import { calculateRouteMetrics } from '@/lib/route-utils'
 import { getDb } from '@/db'
@@ -30,14 +32,6 @@ export const fetchRoutes = createServerFn({ method: 'GET' }).handler(
   },
 )
 
-export const fetchPrefectures = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const db = getDb((env as any).DB)
-
-    return await getAllPrefectures(db)
-  },
-)
-
 export const fetchRoutesByPrefecture = createServerFn({ method: 'GET' })
   .inputValidator((data: { key: string }) => data)
   .handler(async ({ data }) => {
@@ -51,9 +45,32 @@ export const fetchRoutesByPrefecture = createServerFn({ method: 'GET' })
       throw new Error('Prefecture not found')
     }
 
+    // Get the region for this prefecture
+    const allRegions = await getAllRegions(db)
+    const region = allRegions.find((r) => r.id === prefecture.region_id)
+
     return {
       prefecture,
+      region,
       routes: await getRoutesByPrefecture(db, prefecture.id),
+    }
+  })
+
+export const fetchRoutesByRegion = createServerFn({ method: 'GET' })
+  .inputValidator((data: { key: string }) => data)
+  .handler(async ({ data }) => {
+    const db = getDb((env as any).DB)
+
+    // Find region by key
+    const region = await getRegionByKey(db, data.key)
+
+    if (!region) {
+      throw new Error('Region not found')
+    }
+
+    return {
+      region,
+      routes: await getRoutesByRegion(db, region.id),
     }
   })
 

@@ -5,7 +5,7 @@ export interface Prefecture {
   id: number
   key: string
   name: string
-  region: string
+  region_id: number
 }
 
 // Get all prefectures
@@ -22,6 +22,6 @@ export async function getAllPrefectures(
     id: p.id,
     key: p.key,
     name: p.name,
-    region: p.region,
+    region_id: p.region_id,
   }))
 }

@@ -3,29 +3,32 @@ import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material'
 import { ArrowForward } from '@mui/icons-material'
 import { useState } from 'react'
 import { toggleSavedRoute } from '@/server/saved-routes'
-import { fetchPrefectures, fetchRoutes } from '@/server/routes'
+import { fetchRoutes } from '@/server/routes'
+import { fetchRegions } from '@/server/regions'
 import { RouteCard } from '@/components/RouteCard'
 import { RouteSearchBar } from '@/components/RouteSearchBar'
+import { fetchPrefectures } from '@/server/prefectures'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
-    const [routes, prefectures] = await Promise.all([
+    const [routes, prefectures, regions] = await Promise.all([
       fetchRoutes(),
       fetchPrefectures(),
+      fetchRegions(),
     ])
-    return { routes, prefectures }
+    return { routes, prefectures, regions }
   },
   component: HomeComponent,
 })
 
 function HomeComponent() {
-  const { routes, prefectures } = Route.useLoaderData()
+  const { routes, prefectures, regions } = Route.useLoaderData()
   const { user } = Route.useRouteContext()
   const navigate = useNavigate()
-  // const [searchQuery, setSearchQuery] = useState('')
+
   const [savedRoutes, setSavedRoutes] = useState<Record<string, boolean>>(
     routes.reduce(
-      (acc, route) => {
+      (acc: Record<string, boolean>, route: any) => {
         acc[route.id] = route.isSaved || false
         return acc
       },
@@ -50,34 +53,26 @@ function HomeComponent() {
   // Always show only the first 6 recent routes
   const recentRoutes = routes.slice(0, 6)
 
-  // Group prefectures by region
-  const prefecturesByRegion = prefectures.reduce(
-    (acc: Record<string, typeof prefectures>, prefecture: any) => {
-      const region = prefecture.region
-      if (!acc[region]) {
-        acc[region] = []
-      }
-      acc[region].push(prefecture)
+  // Create a map of region_id to region for easy lookup
+  const regionMap = regions.reduce(
+    (acc: Record<number, (typeof regions)[number]>, region: any) => {
+      acc[region.id] = region
       return acc
     },
     {},
   )
 
-  // Define region order (reversed)
-  const regionOrder = [
-    '九州',
-    '四国',
-    '中国',
-    '近畿',
-    '中部',
-    '関東',
-    '東北',
-    '北海道',
-  ]
-
-  const orderedRegions = regionOrder.filter((region) =>
-    prefecturesByRegion.hasOwnProperty(region),
-  )
+  // Group prefectures by region using region_id
+  const prefecturesByRegionId = [...prefectures]
+    .sort((a, b) => b.region_id - a.region_id) // Sort by region_id descending
+    .reduce((acc, prefecture) => {
+      const regionId = prefecture.region_id
+      if (!acc.has(regionId)) {
+        acc.set(regionId, [])
+      }
+      acc.get(regionId)!.push(prefecture)
+      return acc
+    }, new Map<number, Array<(typeof prefectures)[number]>>())
 
   return (
     <Stack spacing={6}>
@@ -144,43 +139,52 @@ function HomeComponent() {
             pb: 2,
           }}
         >
-          {orderedRegions.map((region) => (
-            <Box
-              key={region}
-              sx={{
-                flex: '0 0 auto',
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ mb: 1.5, color: 'text.secondary', fontWeight: 'bold' }}
-              >
-                {region}
-              </Typography>
-              <Stack spacing={1}>
-                {prefecturesByRegion[region].map((prefecture: any) => (
-                  <Link
-                    key={prefecture.id}
-                    to="/routes/$id"
-                    params={{ id: prefecture.key }}
+          {Array.from(prefecturesByRegionId.entries()).map(
+            ([regionId, prefecturesList]) => {
+              const region = regionMap[regionId]
+              return (
+                <Box
+                  key={regionId}
+                  sx={{
+                    flex: '0 0 auto',
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      mb: 1.5,
+                      color: 'text.secondary',
+                      fontWeight: 'bold',
+                    }}
                   >
-                    <Chip
-                      label={prefecture.name}
-                      clickable
-                      size="small"
-                      sx={{
-                        justifyContent: 'flex-start',
-                        '&:hover': {
-                          bgcolor: 'primary.light',
-                          color: 'primary.contrastText',
-                        },
-                      }}
-                    />
-                  </Link>
-                ))}
-              </Stack>
-            </Box>
-          ))}
+                    {region.name}
+                  </Typography>
+                  <Stack spacing={1}>
+                    {prefecturesList.map((prefecture: any) => (
+                      <Link
+                        key={prefecture.id}
+                        to="/routes/$id"
+                        params={{ id: prefecture.key }}
+                      >
+                        <Chip
+                          label={prefecture.name}
+                          clickable
+                          size="small"
+                          sx={{
+                            justifyContent: 'flex-start',
+                            '&:hover': {
+                              bgcolor: 'primary.light',
+                              color: 'primary.contrastText',
+                            },
+                          }}
+                        />
+                      </Link>
+                    ))}
+                  </Stack>
+                </Box>
+              )
+            },
+          )}
         </Box>
       </Container>
 
@@ -190,7 +194,7 @@ function HomeComponent() {
           Recent Routes
         </Typography>
         <Stack spacing={2} sx={{ mt: 3 }}>
-          {recentRoutes.map((route) => (
+          {recentRoutes.map((route: any) => (
             <RouteCard
               key={route.id}
               route={route}

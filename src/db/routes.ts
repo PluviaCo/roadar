@@ -98,6 +98,7 @@ export async function getAllRoutes(
   db: Kysely<DB>,
   userId?: number,
   prefectureId?: number,
+  regionId?: number,
 ): Promise<Array<Route>> {
   // Get routes that are either public OR owned by the user
   let query = db.selectFrom('routes').selectAll().orderBy('created_at', 'desc')
@@ -115,6 +116,14 @@ export async function getAllRoutes(
   // Filter by prefecture if specified
   if (prefectureId) {
     query = query.where('prefecture_id', '=', prefectureId)
+  }
+
+  // Filter by region if specified
+  if (regionId) {
+    query = query
+      .innerJoin('prefectures', 'routes.prefecture_id', 'prefectures.id')
+      .where('prefectures.region_id', '=', regionId)
+      .selectAll('routes')
   }
 
   const routes = await query.execute()
@@ -194,6 +203,15 @@ export async function getRoutesByPrefecture(
   userId?: number,
 ): Promise<Array<Route>> {
   return getAllRoutes(db, userId, prefectureId)
+}
+
+// Get routes by region
+export async function getRoutesByRegion(
+  db: Kysely<DB>,
+  regionId: number,
+  userId?: number,
+): Promise<Array<Route>> {
+  return getAllRoutes(db, userId, undefined, regionId)
 }
 
 // Get routes created by a specific user

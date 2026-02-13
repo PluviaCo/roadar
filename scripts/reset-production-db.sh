@@ -9,6 +9,7 @@ echo ""
 echo "Dropping all tables and migration history..."
 
 # Drop tables in reverse dependency order (child tables first)
+npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS regions;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS prefectures;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS trip_likes;"
 npx wrangler d1 execute roadar-db --remote --command="DROP TABLE IF EXISTS trip_photos;"

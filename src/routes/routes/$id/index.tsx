@@ -1,8 +1,8 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
   Box,
+  Breadcrumbs,
   Button,
-  Chip,
   IconButton,
   Rating,
   Stack,
@@ -10,7 +10,6 @@ import {
 } from '@mui/material'
 import {
   Add as AddIcon,
-  ArrowBack,
   DriveEta,
   Favorite,
   FavoriteBorder,
@@ -21,6 +20,10 @@ import {
 } from '@mui/icons-material'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 import { useState } from 'react'
+import type { Region } from '@/db/regions'
+import type { Prefecture } from '@/db/prefectures'
+import type { Route as RouteModel } from '@/db/routes'
+import type { Trip } from '@/db/trips'
 import RoutePlotter from '@/components/RoutePlotter'
 import { TripForm } from '@/components/TripForm'
 import { TripCard } from '@/components/TripCard'
@@ -29,16 +32,18 @@ import { toggleSavedRoute } from '@/server/saved-routes'
 import {
   fetchRoute,
   fetchRoutesByPrefecture,
+  fetchRoutesByRegion,
   updateRoutePrivacy,
 } from '@/server/routes'
 import { createTrip, fetchTripsByRoute, toggleTripLike } from '@/server/trips'
 import { formatDistance, formatDuration } from '@/lib/route-utils'
 import { useSnackbar } from '@/components/SnackbarProvider'
 import { RoutesListMapView } from '@/components/RoutesListMapView'
+import { CustomLink } from '@/components/CustomLink'
 
 export const Route = createFileRoute('/routes/$id/')({
   loader: async ({ params }) => {
-    // Check if ID is a number (route ID) or string (prefecture key)
+    // Check if ID is a number (route ID) or string (prefecture/region key)
     const isNumeric = /^\d+$/.test(params.id)
 
     if (isNumeric) {
@@ -52,14 +57,22 @@ export const Route = createFileRoute('/routes/$id/')({
       }
       return { type: 'route' as const, route, trips }
     } else {
-      // Load prefecture routes
-      const { prefecture, routes } = await fetchRoutesByPrefecture({
-        data: { key: params.id },
-      })
-      return { type: 'prefecture' as const, prefecture, routes }
+      // Try loading as region first, then prefecture
+      try {
+        const { region, routes } = await fetchRoutesByRegion({
+          data: { key: params.id },
+        })
+        return { type: 'region' as const, region, routes }
+      } catch {
+        // If region not found, try prefecture
+        const { prefecture, region, routes } = await fetchRoutesByPrefecture({
+          data: { key: params.id },
+        })
+        return { type: 'prefecture' as const, prefecture, region, routes }
+      }
     }
   },
-  component: RouteOrPrefectureComponent,
+  component: RouteOrPrefectureOrRegionComponent,
   errorComponent: ({ error }) => (
     <Stack padding={2}>
       <Typography color="error">Error: {error.message}</Typography>
@@ -67,13 +80,18 @@ export const Route = createFileRoute('/routes/$id/')({
   ),
 })
 
-function RouteOrPrefectureComponent() {
+function RouteOrPrefectureOrRegionComponent() {
   const data = Route.useLoaderData()
+
+  if (data.type === 'region') {
+    return <RegionRoutesComponent region={data.region} routes={data.routes} />
+  }
 
   if (data.type === 'prefecture') {
     return (
       <PrefectureRoutesComponent
         prefecture={data.prefecture}
+        region={data.region}
         routes={data.routes}
       />
     )
@@ -82,13 +100,13 @@ function RouteOrPrefectureComponent() {
   return <RouteDetailComponent route={data.route} trips={data.trips} />
 }
 
-// Prefecture Routes Component (list view like /routes)
-function PrefectureRoutesComponent({
-  prefecture,
+// Region Routes Component (list view like /routes)
+function RegionRoutesComponent({
+  region,
   routes,
 }: {
-  prefecture: any
-  routes: Array<any>
+  region: Region
+  routes: Array<RouteModel>
 }) {
   const { user } = Route.useRouteContext()
 
@@ -103,14 +121,68 @@ function PrefectureRoutesComponent({
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Link to="/">
-            <Button startIcon={<ArrowBack />} variant="outlined">
-              Home
+          <Box>
+            <Breadcrumbs aria-label="breadcrumb">
+              <Typography sx={{ color: 'text.primary' }}>
+                {region.name}
+              </Typography>
+            </Breadcrumbs>
+            <Typography variant="h1">{region.name}</Typography>
+          </Box>
+        </Box>
+        {user && (
+          <Link to="/routes/create">
+            <Button variant="contained" startIcon={<AddIcon />}>
+              Create Route
             </Button>
           </Link>
+        )}
+      </Box>
+      <RoutesListMapView routes={routes} user={user} />
+    </Stack>
+  )
+}
+
+// Prefecture Routes Component (list view like /routes)
+function PrefectureRoutesComponent({
+  prefecture,
+  region,
+  routes,
+}: {
+  prefecture: Prefecture
+  region: Region | undefined
+  routes: Array<RouteModel>
+}) {
+  const { user } = Route.useRouteContext()
+
+  return (
+    <Stack spacing={2} padding={2} sx={{ height: '100vh' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box>
+            <Breadcrumbs aria-label="breadcrumb">
+              {region && (
+                <CustomLink
+                  color="inherit"
+                  key={region.id}
+                  to="/routes/$id"
+                  params={{ id: region.key }}
+                >
+                  {region.name}
+                </CustomLink>
+              )}
+              <Typography sx={{ color: 'text.primary' }}>
+                {prefecture.name}
+              </Typography>
+            </Breadcrumbs>
             <Typography variant="h1">{prefecture.name}</Typography>
-            <Chip label={prefecture.region} size="small" sx={{ mt: 0.5 }} />
           </Box>
         </Box>
         {user && (
@@ -131,8 +203,8 @@ function RouteDetailComponent({
   route: initialRoute,
   trips: initialTrips,
 }: {
-  route: any
-  trips: Array<any>
+  route: RouteModel
+  trips: Array<Trip>
 }) {
   const photosDisplayCount = 4
   const { user } = Route.useRouteContext()

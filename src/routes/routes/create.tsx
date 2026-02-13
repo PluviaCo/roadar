@@ -19,8 +19,9 @@ import {
 } from '@mui/material'
 import type { RouteCoordinate } from '@/db/routes'
 import { createProtectedRoute } from '@/lib/protected-routes'
-import { createRoute, fetchPrefectures } from '@/server/routes'
+import { createRoute } from '@/server/routes'
 import { useSnackbar } from '@/components/SnackbarProvider'
+import { fetchPrefectures } from '@/server/prefectures'
 
 export const Route = createFileRoute('/routes/create')({
   ...createProtectedRoute(),
@@ -81,7 +82,7 @@ function CreateRoute() {
           description: description.trim() || undefined,
           coordinates,
           isPublic,
-          prefectureId: prefectureId as number,
+          prefectureId: prefectureId,
         },
       })
 
@@ -133,12 +134,12 @@ function CreateRoute() {
               <InputLabel>Prefecture</InputLabel>
               <Select
                 value={prefectureId}
-                onChange={(e) => setPrefectureId(e.target.value as number)}
+                onChange={(e) => setPrefectureId(e.target.value)}
                 label="Prefecture"
               >
                 {prefectures.map((prefecture) => (
                   <MenuItem key={prefecture.id} value={prefecture.id}>
-                    {prefecture.name} ({prefecture.region})
+                    {prefecture.name}
                   </MenuItem>
                 ))}
               </Select>

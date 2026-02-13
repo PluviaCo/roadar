@@ -22,14 +22,26 @@ CREATE TABLE IF NOT EXISTS line_users (
 CREATE INDEX IF NOT EXISTS idx_line_users_line_user_id ON line_users(line_user_id);
 CREATE INDEX IF NOT EXISTS idx_line_users_user_id ON line_users(user_id);
 
+-- Create regions table
+CREATE TABLE IF NOT EXISTS regions (
+  id INTEGER PRIMARY KEY,
+  key TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create prefectures table
 CREATE TABLE IF NOT EXISTS prefectures (
   id INTEGER PRIMARY KEY,
   key TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL UNIQUE,
-  region TEXT NOT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  region_id INTEGER NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (region_id) REFERENCES regions(id)
 );
+
+-- Create index for prefectures region_id
+CREATE INDEX IF NOT EXISTS idx_prefectures_region_id ON prefectures(region_id);
 
 -- Create routes table
 CREATE TABLE IF NOT EXISTS routes (

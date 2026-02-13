@@ -19,11 +19,18 @@ export interface LineUsersTable {
   created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
+export interface RegionsTable {
+  id: number
+  key: string
+  name: string
+  created_at: ColumnType<Date, Date | string | undefined, never>
+}
+
 export interface PrefecturesTable {
   id: number
   key: string
   name: string
-  region: string
+  region_id: number
   created_at: ColumnType<Date, Date | string | undefined, never>
 }
 
@@ -88,6 +95,7 @@ export interface DB {
   users: UsersTable
   line_users: LineUsersTable
   routes: RoutesTable
+  regions: RegionsTable
   prefectures: PrefecturesTable
   photos: PhotosTable
   saved_routes: SavedRoutesTable
