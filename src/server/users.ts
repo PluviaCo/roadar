@@ -4,29 +4,31 @@ import { env } from 'cloudflare:workers'
 import { getUser, updateUser } from '@/db/users'
 import { useAppSession } from '@/lib/session'
 
-export const getCurrentUser = createServerFn({ method: 'GET' }).handler(async () => {
-  const session = await useAppSession()
+export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const session = await useAppSession()
 
-  if (!session.data.id) {
-    return null
-  }
+    if (!session.data.id) {
+      return null
+    }
 
-  const db = (env as any).DB
-  const user = await getUser(db, session.data.id)
+    const db = (env as any).DB
+    const user = await getUser(db, session.data.id)
 
-  if (!user) {
-    // User no longer exists in database, clear the session
-    session.clear()
-    return null
-  }
+    if (!user) {
+      // User no longer exists in database, clear the session
+      session.clear()
+      return null
+    }
 
-  return {
-    id: user.id,
-    email: user.email || undefined,
-    name: user.name,
-    picture_url: user.picture_url || undefined,
-  }
-})
+    return {
+      id: user.id,
+      email: user.email || undefined,
+      name: user.name,
+      picture_url: user.picture_url || undefined,
+    }
+  },
+)
 
 export interface UpdateProfileData {
   name?: string
